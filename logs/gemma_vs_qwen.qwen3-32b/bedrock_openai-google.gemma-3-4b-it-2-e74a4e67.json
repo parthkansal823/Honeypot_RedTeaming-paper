@@ -1,0 +1,120 @@
+{
+  "session_id": "bedrock_openai-google.gemma-3-4b-it-2-e74a4e67",
+  "attacker_type": "synthetic_llm",
+  "provider": "bedrock_openai",
+  "model": "google.gemma-3-4b-it",
+  "honeypot_backend_label": "dynamic_qwen.qwen3-32b",
+  "target_host": "127.0.0.1",
+  "target_port": 2222,
+  "started_at": "2026-09-27T19:19:50.589622+00:00",
+  "turns": [
+    {
+      "turn": 0,
+      "timestamp": "2026-09-27T19:19:56.001127+00:00",
+      "command": "ls -la",
+      "output": "\ntotal 64\ndrwxr-xr-x  3 root root 4096 Apr  5 07:15 .\ndrwxr-xr-x  3 root root 4096 Apr  5 07:15 ..\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 bin\n-rw-r--r--  1 root root   39 Apr  5 07:15 .bash_history\n-rw-r--r--  1 root root  310 Apr  5 07:15 .bashrc\ndrwx------  2 root root 4096 Apr  5 07:15 dev\n-rw-r--r--  1 root root 1409 Apr  5 07:15 .profile\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 etc\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 home\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 lib\ndrwx------  2 root root 4096 Apr  5 07:15 media\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 mnt\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 opt\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 root\ndrwxr-xr-x  4 root root 4096 Apr  5 07:15 run\ndrwxr-xr-x 10 root root 4096 Apr  5 07:15 sbin\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 srv\ndrwxrwxrwt  2 root root 4096 Apr  5 07:15 tmp\ndrwxr-xr-x 10 root root 4096 Apr  5 07:15 usr\ndrwxr-xr-x 13 root root 4096 Apr  5 07:15 var\n\nroot@svr04:/# ",
+      "latency_sec": 3.907
+    },
+    {
+      "turn": 1,
+      "timestamp": "2026-09-27T19:20:01.208545+00:00",
+      "command": "cat /etc/passwd",
+      "output": "\nroot:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\nbin:x:2:2:bin:/bin:/usr/sbin/nologin\nsys:x:3:3:sys:/dev:/usr/sbin/nologin\nsync:x:4:65534:sync:/bin:/bin/sync\ngames:x:5:60:games:/usr/games:/usr/sbin/nologin\nman:x:6:12:man:/var/cache/man:/usr/sbin/nologin\nlp:x:7:8:lp:/var/spool/lpd:/usr/sbin/nologin\nmail:x:8:8:mail:/var/mail:/usr/sbin/nologin\nnews:x:9:9:news:/var/spool/news:/usr/sbin/nologin\nuucp:x:10:100:uucp:/var/spool/uucp:/usr/sbin/nologin\nnobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin\n\nroot@svr04:/# ",
+      "latency_sec": 2.859
+    },
+    {
+      "turn": 2,
+      "timestamp": "2026-09-27T19:20:06.850547+00:00",
+      "command": "ls -la /etc",
+      "output": "\ntotal 120\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 .\ndrwxr-xr-x  3 root root 4096 Apr  5 07:15 ..\n-rw-r--r--  1 root root  974 Apr  5 07:15 passwd\n-rw-r--r--  1 root root  195 Apr  5 07:15 group\n-rw-r--r--  1 root root  157 Apr  5 07:15 shadow\n-rw-r--r--  1 root root  157 Apr  5 07:15 gshadow\n-rw-r--r--  1 root root  231 Apr  5 07:15 hosts\n-rw-r--r--  1 root root   60 Apr  5 07:15 networks\n-rw-r--r--  1 root root   14 Apr  5 07:15 protocols\n-rw-r--r--  1 root root  106 Apr  5 07:15 services\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 sysconfig\ndrwxr-xr-x  2 root root 4096 Apr  5 07:15 ssh\n\nroot@svr04:/# ",
+      "latency_sec": 2.719
+    },
+    {
+      "turn": 3,
+      "timestamp": "2026-09-27T19:20:11.495510+00:00",
+      "command": "cat /etc/shadow",
+      "output": "\nroot:$6$randomhash123456:18399:0:99999:7:::\ndaemon:*:18399:0:99999:7:::\nbin:*:18399:0:99999:7:::\nsys:*:18399:0:99999:7:::\nsync:*:18399:0:99999:7:::\ngames:*:18399:0:99999:7:::\nman:*:18399:0:99999:7:::\nlp:*:18399:0:99999:7:::\nmail:*:18399:0:99999:7:::\nnews:*:18399:0:99999:7:::\nuucp:*:18399:0:99999:7:::\nnobody:*:18399:0:99999:7:::\n\nroot@svr04:/# ",
+      "latency_sec": 1.953
+    },
+    {
+      "turn": 4,
+      "timestamp": "2026-09-27T19:20:16.177321+00:00",
+      "command": "ls -la /tmp",
+      "output": "\ntotal 20\ndrwxrwxrwt  2 root root 4096 Apr  5 07:15 .\ndrwxr-xr-x  3 root root 4096 Apr  5 07:15 ..\n-rw-------  1 root root    0 Apr  5 07:15 .tmpfile\n\nroot@svr04:/# ",
+      "latency_sec": 1.359
+    },
+    {
+      "turn": 5,
+      "timestamp": "2026-09-27T19:20:19.710644+00:00",
+      "command": "cat .tmpfile",
+      "output": "\ncat: .tmpfile: No such file or directory\n\n\nroot@svr04:/# ",
+      "latency_sec": 0.75
+    },
+    {
+      "turn": 6,
+      "timestamp": "2026-09-27T19:20:23.178349+00:00",
+      "command": "ls -la /tmp",
+      "output": "\ntotal 20\ndrwxrwxrwt  2 root root 4096 Apr  5 07:15 .\ndrwxr-xr-x  3 root root 4096 Apr  5 07:15 ..\n-rw-------  1 root root    0 Apr  5 07:15 .tmpfile\n\nroot@svr04:/# ",
+      "latency_sec": 1.062
+    },
+    {
+      "turn": 7,
+      "timestamp": "2026-09-27T19:20:25.983216+00:00",
+      "command": "mkdir /tmp/testdir",
+      "output": "\n\nroot@svr04:/# ",
+      "latency_sec": 0.594
+    },
+    {
+      "turn": 8,
+      "timestamp": "2026-09-27T19:20:29.623048+00:00",
+      "command": "ls -la /tmp/testdir",
+      "output": "\ntotal 8\ndrwxr-xr-x 2 root root 4096 Apr  5 07:15 .\ndrwxrwxrwt 2 root root 4096 Apr  5 07:15 ..\n\nroot@svr04:/# ",
+      "latency_sec": 1.203
+    },
+    {
+      "turn": 9,
+      "timestamp": "2026-09-27T19:20:33.243586+00:00",
+      "command": "touch /tmp/testfile",
+      "output": "\n\nroot@svr04:/# ",
+      "latency_sec": 0.907
+    },
+    {
+      "turn": 10,
+      "timestamp": "2026-09-27T19:20:37.596577+00:00",
+      "command": "ls -la /tmp/testfile",
+      "output": "\n-rw-r--r-- 1 root root 0 Apr  5 07:15 /tmp/testfile\n\nroot@svr04:/# ",
+      "latency_sec": 0.75
+    },
+    {
+      "turn": 11,
+      "timestamp": "2026-09-27T19:20:41.452179+00:00",
+      "command": "cat /tmp/testfile > /tmp/testfile.copy",
+      "output": "\n\nroot@svr04:/# ",
+      "latency_sec": 0.594
+    },
+    {
+      "turn": 12,
+      "timestamp": "2026-09-27T19:20:44.952103+00:00",
+      "command": "ls -la /tmp/testfile.copy",
+      "output": "\n-rw-r--r-- 1 root root 0 Apr  5 07:15 /tmp/testfile.copy\n\nroot@svr04:/# ",
+      "latency_sec": 0.75
+    },
+    {
+      "turn": 13,
+      "timestamp": "2026-09-27T19:20:49.109782+00:00",
+      "command": "exit",
+      "output": "\nlogout\n\nroot@svr04:/# ",
+      "latency_sec": 0.75
+    },
+    {
+      "turn": 14,
+      "command": "DONE",
+      "output": null,
+      "latency_sec": null,
+      "note": "session_ended_by_model"
+    }
+  ],
+  "status": "completed",
+  "ended_at": "2026-09-27T19:20:51.859187+00:00",
+  "total_turns": 15
+}

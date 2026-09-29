@@ -1,0 +1,190 @@
+{
+  "session_id": "bedrock_openai-google.gemma-3-4b-it-1-01f946fe",
+  "attacker_type": "synthetic_llm",
+  "provider": "bedrock_openai",
+  "model": "google.gemma-3-4b-it",
+  "honeypot_backend_label": "static",
+  "target_host": "127.0.0.1",
+  "target_port": 2222,
+  "started_at": "2026-09-27T04:03:22.993091+00:00",
+  "turns": [
+    {
+      "turn": 0,
+      "timestamp": "2026-09-27T04:03:27.747796+00:00",
+      "command": "whoami",
+      "output": "whoami\nroot\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 1,
+      "timestamp": "2026-09-27T04:03:31.800378+00:00",
+      "command": "ls -la /root",
+      "output": "ls -la /root\ndrwx------ 1 root root 4096 2024-06-12 05:30 .\ndrwxr-xr-x 1 root root    0 2024-06-12 05:30 ..\n-rw-r--r-- 1 root root  571 2021-04-11 01:30 .bashrc\n-rw-r--r-- 1 root root  161 2019-07-09 15:35 .profile\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 2,
+      "timestamp": "2026-09-27T04:03:35.728701+00:00",
+      "command": "cat /root/.bashrc",
+      "output": "cat /root/.bashrc\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 3,
+      "timestamp": "2026-09-27T04:03:40.242972+00:00",
+      "command": "pwd",
+      "output": "pwd\n/root\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 4,
+      "timestamp": "2026-09-27T04:03:44.464806+00:00",
+      "command": "ls -la /home",
+      "output": "ls -la /home\ndrwxr-xr-x 1 root root 4096 2024-01-29 02:50 .\ndrwxr-xr-x 1 root root    0 2024-06-12 05:30 ..\ndrwxr-xr-x 1 phil phil 4096 2026-06-23 06:25 phil\nroot@svr04:~# ",
+      "latency_sec": 1.657
+    },
+    {
+      "turn": 5,
+      "timestamp": "2026-09-27T04:03:49.256440+00:00",
+      "command": "who -a",
+      "output": "who -a\nroot     pts/0        2026-09-27 09:33 (10.0.2.2)\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 6,
+      "timestamp": "2026-09-27T04:03:54.257979+00:00",
+      "command": "cat /etc/os-release",
+      "output": "cat /etc/os-release\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 7,
+      "timestamp": "2026-09-27T04:03:58.436624+00:00",
+      "command": "sudo apt update",
+      "output": "sudo apt update\nE: Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denied)\nE: Unable to lock the list directory\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 8,
+      "timestamp": "2026-09-27T04:04:03.385974+00:00",
+      "command": "ls -la /var/lib/apt/lists/",
+      "output": "ls -la /var/lib/apt/lists/\ndrwxr-xr-x 1 root root     4096 2026-05-04 20:15 .\ndrwxr-xr-x 1 root root     4096 2026-05-04 20:15 ..\ndrwxr-xr-x 1 42   root     4096 2026-05-04 20:15 auxfiles\n-rw-r--r-- 1 root root    47954 2026-05-03 20:24 deb.debian.org_debian-security_dists_bookworm-security_InRelease\n-rw-r--r-- 1 root root   594230 2026-05-03 20:24 deb.debian.org_debian-security_dists_bookworm-security_main_binary-amd64_Packages.lz4\n-rw-r--r-- 1 root root    55446 2026-05-04 13:42 deb.debian.org_debian_dists_bookworm-updates_InRelease\n-rw-r--r-- 1 root root    11648 2025-08-08 19:28 deb.debian.org_debian_dists_bookworm-updates_main_binary-amd64_Packages.lz4\n-rw-r--r-- 1 root root   151078 2026-01-11 04:23 deb.debian.org_debian_dists_bookworm_InRelease\n-rw-r--r-- 1 root root 18844795 2026-01-10 16:53 deb.debian.org_debian_dists_bookworm_main_binary-amd64_Packages.lz4\n-rw-r----- 1 root root        0 2026-05-04 20:15 lock\ndrwx------ 1 42   root     4096 2026-05-04 20:15 partial\nroot@svr04:~# ",
+      "latency_sec": 1.657
+    },
+    {
+      "turn": 9,
+      "timestamp": "2026-09-27T04:04:08.991686+00:00",
+      "command": "ls -la /var/lib/apt/lists/lock",
+      "output": "ls -la /var/lib/apt/lists/lock\n-rw-r----- 1 root root 0 2026-05-04 20:15 /var/lib/apt/lists/lock\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 10,
+      "timestamp": "2026-09-27T04:04:14.349589+00:00",
+      "command": "sudo rm /var/lib/apt/lists/lock",
+      "output": "sudo rm /var/lib/apt/lists/lock\nroot@svr04:~# ",
+      "latency_sec": 1.953
+    },
+    {
+      "turn": 11,
+      "timestamp": "2026-09-27T04:04:20.258073+00:00",
+      "command": "sudo apt update",
+      "output": "sudo apt update\nE: Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denied)\nE: Unable to lock the list directory\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 12,
+      "timestamp": "2026-09-27T04:04:25.895959+00:00",
+      "command": "ls -l /var/lib/apt/lists/lock",
+      "output": "ls -l /var/lib/apt/lists/lock\nls: cannot access /var/lib/apt/lists/lock: No such file or directory\nroot@svr04:~# ",
+      "latency_sec": 1.657
+    },
+    {
+      "turn": 13,
+      "timestamp": "2026-09-27T04:04:30.476688+00:00",
+      "command": "cat /etc/passwd",
+      "output": "cat /etc/passwd\nroot:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/bin/sh\nbin:x:2:2:bin:/bin:/bin/sh\nsys:x:3:3:sys:/dev:/bin/sh\nsync:x:4:65534:sync:/bin:/bin/sync\ngames:x:5:60:games:/usr/games:/bin/sh\nman:x:6:12:man:/var/cache/man:/bin/sh\nlp:x:7:7:lp:/var/spool/lpd:/bin/sh\nmail:x:8:8:mail:/var/mail:/bin/sh\nnews:x:9:9:news:/var/spool/news:/bin/sh\nuucp:x:10:10:uucp:/var/spool/uucp:/bin/sh\nproxy:x:13:13:proxy:/bin:/bin/sh\nwww-data:x:33:33:www-data:/var/www:/bin/sh\nbackup:x:34:34:backup:/var/backups:/bin/sh\nlist:x:38:38:Mailing List Manager:/var/list:/bin/sh\nirc:x:39:39:ircd:/var/run/ircd:/bin/sh\ngnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/bin/sh\nnobody:x:65534:65534:nobody:/nonexistent:/bin/sh\nlibuuid:x:100:101::/var/lib/libuuid:/bin/sh\nsshd:x:101:65534::/var/run/sshd:/usr/sbin/nologin\nphil:x:1000:1000:Phil California,,,:/home/phil:/bin/bash\nroot@svr04:~# ",
+      "latency_sec": 1.641
+    },
+    {
+      "turn": 14,
+      "timestamp": "2026-09-27T04:04:34.644223+00:00",
+      "command": "who -a",
+      "output": "who -a\nroot     pts/0        2026-09-27 09:33 (10.0.2.2)\nroot@svr04:~# ",
+      "latency_sec": 1.657
+    },
+    {
+      "turn": 15,
+      "timestamp": "2026-09-27T04:04:40.259663+00:00",
+      "command": "ls -l /home/phil",
+      "output": "ls -l /home/phil\nroot@svr04:~# ",
+      "latency_sec": 1.657
+    },
+    {
+      "turn": 16,
+      "timestamp": "2026-09-27T04:04:45.261081+00:00",
+      "command": "cat /home/phil/.bashrc",
+      "output": "cat /home/phil/.bashrc\ncat: /home/phil/.bashrc: No such file or directory\nroot@svr04:~# ",
+      "latency_sec": 1.657
+    },
+    {
+      "turn": 17,
+      "timestamp": "2026-09-27T04:04:50.908584+00:00",
+      "command": "ls -la /home/phil",
+      "output": "ls -la /home/phil\ndrwxr-xr-x 1 phil phil 4096 2026-06-23 06:25 .\ndrwxr-xr-x 1 root root 4096 2024-01-29 02:50 ..\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 18,
+      "timestamp": "2026-09-27T04:04:54.979626+00:00",
+      "command": "id phil",
+      "output": "id phil\nuid=0(root) gid=0(root) groups=0(root)\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 19,
+      "timestamp": "2026-09-27T04:04:59.830365+00:00",
+      "command": "sudo whoami",
+      "output": "sudo whoami\nroot\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 20,
+      "timestamp": "2026-09-27T04:05:04.507764+00:00",
+      "command": "ls -la /etc",
+      "output": "ls -la /etc\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 .\ndrwxr-xr-x 1 root root       0 2024-06-12 05:30 ..\n-rw------- 1 root root       0 2024-06-12 05:30 .pwd.lock\n-rw-r--r-- 1 root root    3040 2023-05-25 21:24 adduser.conf\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 alternatives\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 apt\n-rw-r--r-- 1 root root    1994 2023-04-24 02:53 bash.bashrc\n-rw-r--r-- 1 root root     367 2022-09-23 01:36 bindresvport.blacklist\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 cron.d\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 cron.daily\n-rw-r--r-- 1 root root    2969 2023-01-09 03:20 debconf.conf\n-rw-r--r-- 1 root root       5 2024-01-29 02:50 debian_version\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 default\n-rw-r--r-- 1 root root    1706 2023-05-25 21:24 deluser.conf\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 dpkg\n-rw-r--r-- 1 root root     685 2023-03-05 08:46 e2scrub.conf\n-rw-r--r-- 1 root root       0 2024-06-12 05:30 environment\n-rw-r--r-- 1 root root      37 2024-06-12 05:30 fstab\n-rw-r--r-- 1 root root    2584 2022-07-30 03:33 gai.conf\n-rw-r--r-- 1 root root     446 2026-05-04 20:16 group\n-rw-r--r-- 1 root root     434 2024-06-12 05:30 group-\n-rw-r----- 1 root shadow   373 2026-05-04 20:16 gshadow\n-rw-r----- 1 root shadow   364 2024-06-12 05:30 gshadow-\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:15 gss\n-rw-r--r-- 1 root root       9 2006-08-07 22:44 host.conf\n-rw-r--r-- 1 root root      13 2026-05-04 20:14 hostname\n-rw-r--r-- 1 root root     205 2026-05-04 20:15 hosts\n-rw-r--r-- 1 root root     411 2026-05-04 20:16 hosts.allow\n-rw-r--r-- 1 root root     711 2026-05-04 20:16 hosts.deny\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 init.d\n-rw-r--r-- 1 root root    1875 2023-01-04 02:19 inputrc\n-rw-r--r-- 1 root root      27 2024-01-29 02:50 issue\n-rw-r--r-- 1 root root      20 2024-01-29 02:50 issue.net\ndrwxr-xr-x 1 root root    4096 2023-05-25 19:41 kernel\n-rw-r--r-- 1 root root    6782 2026-05-04 20:16 ld.so.cache\n-rw-r--r-- 1 root root      34 2022-09-23 01:36 ld.so.conf\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 ld.so.conf.d\n-rw-r--r-- 1 root root     191 2023-02-09 15:06 libaudit.conf\nlrwxrwxrwx 1 root root      27 2024-06-12 05:30 localtime -> usr/share/zoneinfo/Etc/UTC\n-rw-r--r-- 1 root root   12569 2022-11-11 13:58 login.defs\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 logrotate.d\n-rw-r--r-- 1 root root   73816 2023-02-11 19:15 mime.types\n-rw-r--r-- 1 root root     782 2023-03-05 08:46 mke2fs.conf\n-rw-r--r-- 1 root root     286 2024-01-29 02:50 motd\nlrwxrwxrwx 1 root root      12 2026-05-04 20:14 mtab -> proc/969/mounts\n-rw-r--r-- 1 root root     767 2022-08-11 20:20 netconfig\n-rw-r--r-- 1 root root     494 2022-09-23 01:36 nsswitch.conf\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 opt\nlrwxrwxrwx 1 root root      21 2024-01-29 02:50 os-release -> usr/lib/os-release\n-rw-r--r-- 1 root root     552 2023-09-22 02:25 pam.conf\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 pam.d\n-rw-r--r-- 1 root root     885 2026-05-04 20:16 passwd\n-rw-r--r-- 1 root root     839 2024-06-12 05:30 passwd-\n-rw-r--r-- 1 root root     769 2021-04-11 01:30 profile\ndrwxr-xr-x 1 root root    4096 2024-01-29 02:50 profile.d\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 python3\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:15 python3.11\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 rc0.d\ndrwxr-xr-x 1 root root    4096 2022-09-18 07:23 rc1.d\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 rc2.d\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 rc3.d\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 rc4.d\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 rc5.d\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 rc6.d\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:15 rcS.d\n-rw-r--r-- 1 root root     222 2026-05-04 20:15 resolv.conf\nlrwxrwxrwx 1 root root      13 2024-01-20 14:57 rmt -> usr/sbin/rmt-tar\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:15 runit\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 security\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 selinux\n-rw-r----- 1 root shadow   493 2026-05-04 20:16 shadow\n-rw-r----- 1 root shadow   474 2024-06-12 05:30 shadow-\n-rw-r--r-- 1 root root     128 2024-06-12 05:30 shells\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 skel\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:16 ssh\n-rw-r--r-- 1 root root       0 2024-06-12 05:30 subgid\n-rw-r--r-- 1 root root       0 2024-06-12 05:30 subuid\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:15 sv\n-rw-r--r-- 1 root root    2355 2022-12-19 11:36 sysctl.conf\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:15 sysctl.d\ndrwxr-xr-x 1 root root    4096 2022-09-18 07:23 systemd\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 terminfo\n-rw-r--r-- 1 root root       8 2024-06-12 05:30 timezone\n-rw-r--r-- 1 root root    1260 2024-12-20 13:09 ucf.conf\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:15 ufw\ndrwxr-xr-x 1 root root    4096 2024-06-12 05:30 update-motd.d\ndrwxr-xr-x 1 root root    4096 2026-05-04 20:15 vim\n-rw-r--r-- 1 root root    4942 2025-03-03 19:02 wgetrc\n-rw-r--r-- 1 root root     681 2023-01-18 04:04 xattr.conf\nroot@svr04:~# ",
+      "latency_sec": 1.641
+    },
+    {
+      "turn": 21,
+      "timestamp": "2026-09-27T04:05:09.446328+00:00",
+      "command": "cat /etc/hostname",
+      "output": "cat /etc/hostname\nsvr04\nroot@svr04:~# ",
+      "latency_sec": 1.672
+    },
+    {
+      "turn": 22,
+      "timestamp": "2026-09-27T04:05:14.436899+00:00",
+      "command": "ls -l /etc/os-release",
+      "output": "ls -l /etc/os-release\n-rw-r--r-- 1 root root 267 2024-01-29 02:50 /etc/os-release\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    },
+    {
+      "turn": 23,
+      "timestamp": "2026-09-27T04:05:18.838669+00:00",
+      "command": "cat /etc/os-release",
+      "output": "cat /etc/os-release\nroot@svr04:~# ",
+      "latency_sec": 1.657
+    },
+    {
+      "turn": 24,
+      "timestamp": "2026-09-27T04:05:24.041010+00:00",
+      "command": "uname -a",
+      "output": "uname -a\nLinux svr04 6.1.0-21-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.90-1 (2024-05-03) x86_64 GNU/Linux\nroot@svr04:~# ",
+      "latency_sec": 1.656
+    }
+  ],
+  "status": "max_turns_reached",
+  "ended_at": "2026-09-27T04:05:25.846784+00:00",
+  "total_turns": 25
+}

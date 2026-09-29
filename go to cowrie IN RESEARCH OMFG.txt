@@ -1,0 +1,15 @@
+go to cowrie IN RESEARCH OMFG
+
+source cowrie-env/bin/activate
+cowrie start
+
+to check logs 
+tail -f var/log/cowrie/cowrie.log
+
+for checking the configuration, go to etc -> nano cowrie.cfg, nano cowrie.cfg
+
+
+
+kill pid - kill -9 5666
+rm -f var/run/cowrie.pid
+ss -tlnp | grep 2222

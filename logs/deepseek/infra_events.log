@@ -1,0 +1,6 @@
+2026-09-27T01:30:40.836117+00:00 honeypot unresponsive, attempting recovery
+2026-09-27T01:30:40.837104+00:00 no --vm-host configured; waiting for external watchdog (cowrie_watchdog.sh) to recover it
+2026-09-27T01:32:16.863019+00:00 recovery FAILED
+2026-09-27T01:32:16.865012+00:00 session 1: giving up, honeypot never recovered
+2026-09-27T01:32:21.870469+00:00 honeypot unresponsive, attempting recovery
+2026-09-27T01:32:21.871440+00:00 no --vm-host configured; waiting for external watchdog (cowrie_watchdog.sh) to recover it
