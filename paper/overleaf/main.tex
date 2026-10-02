@@ -117,7 +117,7 @@ Reported is the macro-F1 and accuracy averaged across folds. Macro-F1 is the ave
 \section{Results}\label{sec:results}
 
 \begin{table*}[t]
-\caption{Attacker behavior on the static and LLM-backed (Qwen3-32B) honeypots, 20 sessions per cell. Recon, Cred.: \% of commands matching each keyword set (may overlap). Lat.: mean response time; change vs.\ static. Leak: sessions with leaked chat tokens. Status: completed/turn limit/connection lost/LLM error/refused/timed out. JSD: divergence to deduplicated real data. Match: tactics (of 9) agreeing with real data.}
+\caption{Attacker behavior on the static and LLM-backed (dynamic, Qwen3-32B) honeypots, 20 sessions per cell. Recon, Cred.: \% of commands matching each keyword set (may overlap). Lat.: mean time until the honeypot's output goes quiet; change vs.\ static. Leak: sessions with leaked chat-format tokens. Status: completed/turn limit/connection lost/LLM error/refused/timed out. JSD: verb divergence to template-deduplicated real data. Match: tactics (of 9) whose presence or absence matches real data.}
 \label{tab:cells}
 \centering
 \footnotesize
