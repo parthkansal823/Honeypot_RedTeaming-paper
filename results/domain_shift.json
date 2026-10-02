@@ -1,0 +1,241 @@
+{
+  "n_real_total": 76785,
+  "n_real_interactive": 1672,
+  "n_real_templates": 22,
+  "n_synthetic": 120,
+  "structure": {
+    "synthetic": {
+      "sessions": 120,
+      "distinct_templates": 120,
+      "top5_template_share": 0.041666666666666664,
+      "median_cmds_per_session": 18.0,
+      "mean_chars_per_cmd": 42.96685606060606,
+      "pct_cmds_chained": 0.19365530303030304
+    },
+    "real": {
+      "sessions": 1672,
+      "distinct_templates": 22,
+      "top5_template_share": 0.9623205741626795,
+      "median_cmds_per_session": 23.0,
+      "mean_chars_per_cmd": 53.26678900168704,
+      "pct_cmds_chained": 0.402758457394856
+    }
+  },
+  "tactics": {
+    "synthetic": {
+      "discovery": 1.0,
+      "credential_access": 0.975,
+      "account_manipulation": 0.3416666666666667,
+      "persistence": 0.18333333333333332,
+      "privilege_escalation": 0.4,
+      "defense_evasion": 0.016666666666666666,
+      "ingress_tool_transfer": 0.075,
+      "execution": 0.06666666666666667,
+      "resource_hijacking": 0.0
+    },
+    "real": {
+      "discovery": 0.9216507177033493,
+      "credential_access": 0.011961722488038277,
+      "account_manipulation": 0.8941387559808612,
+      "persistence": 0.0035885167464114833,
+      "privilege_escalation": 0.0005980861244019139,
+      "defense_evasion": 0.012559808612440191,
+      "ingress_tool_transfer": 0.03110047846889952,
+      "execution": 0.9808612440191388,
+      "resource_hijacking": 0.8791866028708134
+    },
+    "real_dedup": {
+      "discovery": 0.5909090909090909,
+      "credential_access": 0.18181818181818182,
+      "account_manipulation": 0.5,
+      "persistence": 0.045454545454545456,
+      "privilege_escalation": 0.045454545454545456,
+      "defense_evasion": 0.22727272727272727,
+      "ingress_tool_transfer": 0.2727272727272727,
+      "execution": 0.6818181818181818,
+      "resource_hijacking": 0.22727272727272727
+    }
+  },
+  "verbs": {
+    "top_synthetic": [
+      [
+        "ls",
+        712
+      ],
+      [
+        "cat",
+        606
+      ],
+      [
+        "head",
+        243
+      ],
+      [
+        "find",
+        217
+      ],
+      [
+        "grep",
+        116
+      ],
+      [
+        "echo",
+        114
+      ],
+      [
+        "done",
+        76
+      ],
+      [
+        "id",
+        72
+      ],
+      [
+        "pwd",
+        64
+      ],
+      [
+        "whoami",
+        62
+      ]
+    ],
+    "top_real": [
+      [
+        "grep",
+        8880
+      ],
+      [
+        "cat",
+        8123
+      ],
+      [
+        "echo",
+        6964
+      ],
+      [
+        "uname",
+        4437
+      ],
+      [
+        "rm",
+        3136
+      ],
+      [
+        "awk",
+        2950
+      ],
+      [
+        "wc",
+        2945
+      ],
+      [
+        "head",
+        2945
+      ],
+      [
+        "which",
+        2517
+      ],
+      [
+        "bash",
+        2515
+      ]
+    ],
+    "jaccard": 0.2845528455284553,
+    "real_mass_covered_by_synthetic_vocab": 0.8195604324464297,
+    "jsd_vs_real": [
+      0.7002169354200091,
+      0.687641412631255,
+      0.7173117254507763
+    ],
+    "jsd_vs_real_dedup": [
+      0.72941704102878,
+      0.719457605946957,
+      0.7454678174880196
+    ]
+  },
+  "c2st": {
+    "normalized_commands": [
+      1.0,
+      0.0
+    ],
+    "verbs_only": [
+      0.9958333333333335,
+      0.009718253158075492
+    ]
+  },
+  "per_condition": [
+    {
+      "attacker": "DeepSeek-V3.2",
+      "backend": "Dynamic Qwen-32B",
+      "n": 20,
+      "sessions_with_chat_leak": 0,
+      "jsd_vs_real_dedup": [
+        0.7851860198889665,
+        0.7691845958495922,
+        0.8144146544192602
+      ],
+      "tactics_matching_real": 5
+    },
+    {
+      "attacker": "DeepSeek-V3.2",
+      "backend": "Static Cowrie",
+      "n": 20,
+      "sessions_with_chat_leak": 0,
+      "jsd_vs_real_dedup": [
+        0.7826163684049042,
+        0.7708213534286853,
+        0.810445952245437
+      ],
+      "tactics_matching_real": 5
+    },
+    {
+      "attacker": "GPT-OSS-120B",
+      "backend": "Dynamic Qwen-32B",
+      "n": 20,
+      "sessions_with_chat_leak": 7,
+      "jsd_vs_real_dedup": [
+        0.745880678304376,
+        0.7335653252051019,
+        0.7802612205286156
+      ],
+      "tactics_matching_real": 7
+    },
+    {
+      "attacker": "GPT-OSS-120B",
+      "backend": "Static Cowrie",
+      "n": 20,
+      "sessions_with_chat_leak": 11,
+      "jsd_vs_real_dedup": [
+        0.7413069683165043,
+        0.7298317995743205,
+        0.7640370056064051
+      ],
+      "tactics_matching_real": 5
+    },
+    {
+      "attacker": "Gemma-3-4B",
+      "backend": "Dynamic Qwen-32B",
+      "n": 20,
+      "sessions_with_chat_leak": 0,
+      "jsd_vs_real_dedup": [
+        0.7463676529903366,
+        0.7316376908495843,
+        0.7776935705899393
+      ],
+      "tactics_matching_real": 7
+    },
+    {
+      "attacker": "Gemma-3-4B",
+      "backend": "Static Cowrie",
+      "n": 20,
+      "sessions_with_chat_leak": 0,
+      "jsd_vs_real_dedup": [
+        0.7983949941699313,
+        0.784533960674218,
+        0.8261176798019564
+      ],
+      "tactics_matching_real": 5
+    }
+  ]
+}

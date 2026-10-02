@@ -1,0 +1,127 @@
+{
+  "label_source": "llm-dual-dota-as-malware_drop",
+  "label_distribution": {
+    "synthetic": {
+      "recon": 14,
+      "credential_access": 87,
+      "privilege_escalation": 2,
+      "persistence": 11,
+      "malware_drop": 6,
+      "resource_hijacking": 0,
+      "defense_evasion": 0,
+      "other": 0
+    },
+    "real": {
+      "recon": 137,
+      "credential_access": 0,
+      "privilege_escalation": 0,
+      "persistence": 443,
+      "malware_drop": 1092,
+      "resource_hijacking": 0,
+      "defense_evasion": 0,
+      "other": 0
+    },
+    "real_dedup": {
+      "recon": 8,
+      "credential_access": 0,
+      "privilege_escalation": 0,
+      "persistence": 5,
+      "malware_drop": 9,
+      "resource_hijacking": 0,
+      "defense_evasion": 0,
+      "other": 0
+    }
+  },
+  "quadrants": [
+    {
+      "id": "Q1",
+      "train": "synthetic",
+      "test": "synthetic",
+      "macro_f1": 0.49277452277452277,
+      "accuracy": 0.7583333333333333,
+      "predicted": {
+        "credential_access": 98,
+        "recon": 12,
+        "malware_drop": 5,
+        "persistence": 5
+      },
+      "majority_macro_f1": 0.1681159420289855,
+      "majority_accuracy": 0.725,
+      "n_train": 60,
+      "n_test": 120
+    },
+    {
+      "id": "Q2",
+      "train": "real",
+      "test": "real",
+      "macro_f1": 0.9329065009595325,
+      "accuracy": 0.9665071770334929,
+      "predicted": {
+        "malware_drop": 1044,
+        "persistence": 435,
+        "recon": 193
+      },
+      "majority_macro_f1": 0.02085747392815759,
+      "majority_accuracy": 0.03229665071770335,
+      "n_train": 1337,
+      "n_test": 1672
+    },
+    {
+      "id": "Q3",
+      "train": "synthetic",
+      "test": "real",
+      "macro_f1": 0.02127659574468085,
+      "accuracy": 0.0215311004784689,
+      "predicted": {
+        "credential_access": 1636,
+        "malware_drop": 36
+      },
+      "majority_macro_f1": 0.0,
+      "majority_accuracy": 0.0,
+      "n_train": 120,
+      "n_test": 1672
+    },
+    {
+      "id": "Q3_dedup",
+      "train": "synthetic",
+      "test": "real_dedup",
+      "macro_f1": 0.06666666666666667,
+      "accuracy": 0.045454545454545456,
+      "predicted": {
+        "credential_access": 21,
+        "malware_drop": 1
+      },
+      "majority_macro_f1": 0.0,
+      "majority_accuracy": 0.0,
+      "n_train": 120,
+      "n_test": 22
+    },
+    {
+      "id": "Q4",
+      "train": "real+synthetic",
+      "test": "real",
+      "macro_f1": 0.9651318912980967,
+      "accuracy": 0.9844497607655502,
+      "predicted": {
+        "malware_drop": 1078,
+        "persistence": 435,
+        "recon": 155,
+        "credential_access": 4
+      },
+      "majority_macro_f1": 0.02085747392815759,
+      "majority_accuracy": 0.03229665071770335,
+      "n_train": 1457,
+      "n_test": 1672
+    }
+  ],
+  "q3_per_class_f1": {
+    "recon": 0.0,
+    "credential_access": 0.0,
+    "privilege_escalation": 0.0,
+    "persistence": 0.0,
+    "malware_drop": 0.06382978723404255,
+    "resource_hijacking": 0.0,
+    "defense_evasion": 0.0,
+    "other": 0.0
+  }
+}

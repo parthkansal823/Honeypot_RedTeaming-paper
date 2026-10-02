@@ -1,0 +1,13 @@
+item_id,label,rationale
+A003,recon,"Dominated by recon: whoami, ls, cat passwd, sudo -l (recon); nano edits interactive and unconfirmed, no write committed."
+A011,persistence,"Heavy credential harvesting, but attacker writes @reboot root reverse-shell cron entry; persistence outranks credential_access."
+A019,persistence,Steals shadow/keys/databases then installs reverse-shell cron via crontab; persistence outranks credential_access in tie-break.
+A036,resource_hijacking,Dota campaign: repeated CPU profiling plus miner/bot download and execution; resource_hijacking outranks malware_drop.
+A042,credential_access,Recon plus grep for password in bashrc; searching for secrets makes credential_access outrank recon.
+A052,resource_hijacking,"Dota miner campaign: CPU profiling, chpasswd, miner download; resource_hijacking outranks persistence and malware_drop."
+A058,credential_access,Reads /etc/shadow content via strings/grep for hashes; credential_access outranks surrounding recon.
+A064,credential_access,Directly cats /etc/shadow to steal hashes; credential_access outranks recon despite apt noise.
+A073,privilege_escalation,Reads shadow then sudo cat and sudo -i to gain root shell; privilege_escalation outranks credential_access.
+A079,credential_access,Reads shadow hashes and SSH authorized_keys; credential harvesting outranks recon and unused SUID hunt.
+A093,persistence,"Appends attacker SSH key and installs payload cron; persistence achieved in-session, outranks credential_access."
+A155,resource_hijacking,"Dota miner campaign identical to A052: CPU profiling, chpasswd, miner download; resource_hijacking wins."

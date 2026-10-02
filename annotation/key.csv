@@ -1,0 +1,185 @@
+item_id,session_id,source,attacker_model,honeypot_backend,template_size
+A001,015afe2ba619,real,,,1
+A002,1f64a5bd7ffd,real,,,3
+A003,bedrock_openai-google.gemma-3-4b-it-1-7fd9cdd3,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A004,bedrock_openai-openai.gpt-oss-120b-0-64a0032d,synthetic,GPT-OSS-120B,Static Cowrie,1
+A005,bedrock_openai-google.gemma-3-4b-it-1-6c720696,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A006,bedrock_openai-openai.gpt-oss-120b-0-bd7fca7f,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A007,6579938e39ce,real,,,1
+A008,bedrock_openai-google.gemma-3-4b-it-0-fddc6c85,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A009,bedrock_openai-google.gemma-3-4b-it-1-1debdcea,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A010,1eee28c72d2d,real,,,1
+A011,bedrock_openai-openai.gpt-oss-120b-0-dabe5401,synthetic,GPT-OSS-120B,Static Cowrie,1
+A012,206e4c0263bf,real,,,3
+A013,68ed9578de83,real,,,1
+A014,bedrock_openai-openai.gpt-oss-120b-0-6d911dd4,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A015,bedrock_openai-google.gemma-3-4b-it-1-01f946fe,synthetic,Gemma-3-4B,Static Cowrie,1
+A016,62721ef243a6,real,,,2
+A017,bedrock_openai-openai.gpt-oss-120b-2-ed5e02a0,synthetic,GPT-OSS-120B,Static Cowrie,1
+A018,bedrock_openai-deepseek.v3.2-0-aa4d3bb0,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A019,bedrock_openai-openai.gpt-oss-120b-0-df95e362,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A020,d35358e97d9b,real,,,1
+A021,e690cac10b04,real,,,1
+A022,2d8b72be50f1,real,,,5
+A023,b97b99297c64,real,,,1
+A024,4e49ba575b26,real,,,1
+A025,cc3d07e5a65f,real,,,1
+A026,bedrock_openai-google.gemma-3-4b-it-0-2d0674be,synthetic,Gemma-3-4B,Static Cowrie,1
+A027,bedrock_openai-deepseek.v3.2-0-59ac6dd7,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A028,5cef8dd3bcdc,real,,,1
+A029,ccc399e98831,real,,,1
+A030,bedrock_openai-deepseek.v3.2-0-64e25d45,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A031,bedrock_openai-google.gemma-3-4b-it-2-e74a4e67,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A032,8e7e8cc46000,real,,,1
+A033,7f8c73d9b711,real,,,1
+A034,bedrock_openai-deepseek.v3.2-0-c372a361,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A035,bedrock_openai-openai.gpt-oss-120b-0-5794e88d,synthetic,GPT-OSS-120B,Static Cowrie,1
+A036,b3dd99f3e715,real,,,1
+A037,bedrock_openai-google.gemma-3-4b-it-2-4a1637f4,synthetic,Gemma-3-4B,Static Cowrie,1
+A038,bedrock_openai-openai.gpt-oss-120b-0-8a540db9,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A039,bedrock_openai-google.gemma-3-4b-it-0-4b735fd8,synthetic,Gemma-3-4B,Static Cowrie,1
+A040,bedrock_openai-deepseek.v3.2-0-953a21ab,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A041,bedrock_openai-deepseek.v3.2-2-060705a6,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A042,bedrock_openai-google.gemma-3-4b-it-2-f43569f9,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A043,003ca586c770,real,,,429
+A044,bedrock_openai-google.gemma-3-4b-it-1-700b7bec,synthetic,Gemma-3-4B,Static Cowrie,1
+A045,28a7dc8c2f08,real,,,6
+A046,bedrock_openai-deepseek.v3.2-0-e7aa08f8,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A047,bedrock_openai-deepseek.v3.2-2-de38dc40,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A048,bedrock_openai-openai.gpt-oss-120b-0-403cec9e,synthetic,GPT-OSS-120B,Static Cowrie,1
+A049,bedrock_openai-google.gemma-3-4b-it-2-9b4cc7e1,synthetic,Gemma-3-4B,Static Cowrie,1
+A050,bedrock_openai-openai.gpt-oss-120b-0-d652f486,synthetic,GPT-OSS-120B,Static Cowrie,1
+A051,bedrock_openai-openai.gpt-oss-120b-0-68c98f35,synthetic,GPT-OSS-120B,Static Cowrie,1
+A052,6a20701e8ac1,real,,,1
+A053,bedrock_openai-deepseek.v3.2-1-76cc4e96,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A054,8a331e6df65a,real,,,1
+A055,bedrock_openai-deepseek.v3.2-1-1aac0c6a,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A056,bedrock_openai-google.gemma-3-4b-it-2-16553bf4,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A057,bedrock_openai-deepseek.v3.2-1-76f5a2b2,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A058,bedrock_openai-google.gemma-3-4b-it-0-9acf08a5,synthetic,Gemma-3-4B,Static Cowrie,1
+A059,bedrock_openai-google.gemma-3-4b-it-0-44e23147,synthetic,Gemma-3-4B,Static Cowrie,1
+A060,bedrock_openai-openai.gpt-oss-120b-0-6d683339,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A061,01ab09b39d27,real,,,36
+A062,bedrock_openai-google.gemma-3-4b-it-4-cf7aeb8e,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A063,06c404895909,real,,,16
+A064,bedrock_openai-google.gemma-3-4b-it-0-78b7894c,synthetic,Gemma-3-4B,Static Cowrie,1
+A065,bedrock_openai-deepseek.v3.2-1-78a30f77,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A066,bedrock_openai-openai.gpt-oss-120b-0-41231360,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A067,bedrock_openai-google.gemma-3-4b-it-1-3def966c,synthetic,Gemma-3-4B,Static Cowrie,1
+A068,bedrock_openai-deepseek.v3.2-2-1d38561f,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A069,b999f516bafe,real,,,1
+A070,bedrock_openai-deepseek.v3.2-1-0a38d35c,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A071,bedrock_openai-google.gemma-3-4b-it-0-4862bf60,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A072,bedrock_openai-google.gemma-3-4b-it-0-447c2dbb,synthetic,Gemma-3-4B,Static Cowrie,1
+A073,bedrock_openai-google.gemma-3-4b-it-2-839c941c,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A074,62c215df6c5e,real,,,1
+A075,28f4fdacdb43,real,,,1
+A076,bedrock_openai-google.gemma-3-4b-it-1-6ec477c6,synthetic,Gemma-3-4B,Static Cowrie,1
+A077,bedrock_openai-openai.gpt-oss-120b-0-cb288662,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A078,bedrock_openai-deepseek.v3.2-0-831a2123,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A079,bedrock_openai-deepseek.v3.2-3-8a90dd4d,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A080,bedrock_openai-google.gemma-3-4b-it-1-bdb3ea4e,synthetic,Gemma-3-4B,Static Cowrie,1
+A081,bedrock_openai-deepseek.v3.2-0-fc0b69ff,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A082,50f79ffcf381,real,,,1
+A083,bedrock_openai-openai.gpt-oss-120b-1-d06879ab,synthetic,GPT-OSS-120B,Static Cowrie,1
+A084,bedrock_openai-deepseek.v3.2-4-eaf8463a,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A085,ae1386db7834,real,,,1
+A086,bedrock_openai-openai.gpt-oss-120b-0-9657d293,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A087,05aaa7873e4a,real,,,1
+A088,bedrock_openai-google.gemma-3-4b-it-1-efb23bbb,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A089,bedrock_openai-openai.gpt-oss-120b-1-9b4531d1,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A090,791ef9865df5,real,,,1
+A091,bedrock_openai-openai.gpt-oss-120b-0-c75a9a8a,synthetic,GPT-OSS-120B,Static Cowrie,1
+A092,e5cd0dee31c4,real,,,1
+A093,bedrock_openai-openai.gpt-oss-120b-0-b95b8efa,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A094,bedrock_openai-openai.gpt-oss-120b-0-40fcc7b4,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A095,bedrock_openai-google.gemma-3-4b-it-0-621bee61,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A096,bedrock_openai-google.gemma-3-4b-it-2-059dc154,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A097,bedrock_openai-google.gemma-3-4b-it-1-7344aa98,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A098,bedrock_openai-openai.gpt-oss-120b-0-f2cac5f2,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A099,bedrock_openai-openai.gpt-oss-120b-0-bcb0c94d,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A100,bedrock_openai-openai.gpt-oss-120b-0-09a78237,synthetic,GPT-OSS-120B,Static Cowrie,1
+A101,bedrock_openai-deepseek.v3.2-3-5a094c97,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A102,bedrock_openai-deepseek.v3.2-0-d8edc65a,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A103,33f93d2329f2,real,,,1
+A104,bedrock_openai-openai.gpt-oss-120b-0-1d2959ff,synthetic,GPT-OSS-120B,Static Cowrie,1
+A105,bedrock_openai-deepseek.v3.2-1-4ed1b365,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A106,11e626e13514,real,,,6
+A107,bedrock_openai-deepseek.v3.2-1-a83bfc19,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A108,bedrock_openai-openai.gpt-oss-120b-1-fce9a94d,synthetic,GPT-OSS-120B,Static Cowrie,1
+A109,bedrock_openai-deepseek.v3.2-2-cf8c0dc4,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A110,64e43b02266e,real,,,1
+A111,bedrock_openai-deepseek.v3.2-2-5b24e0af,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A112,bedrock_openai-openai.gpt-oss-120b-0-66f69422,synthetic,GPT-OSS-120B,Static Cowrie,1
+A113,9c1343f1aae7,real,,,2
+A114,a1eb86c68375,real,,,1
+A115,bedrock_openai-google.gemma-3-4b-it-3-efb202e0,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A116,9c446d3135dd,real,,,1
+A117,bedrock_openai-google.gemma-3-4b-it-0-bc1b39d6,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A118,bedrock_openai-deepseek.v3.2-1-87c3677a,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A119,bedrock_openai-google.gemma-3-4b-it-2-4f09f968,synthetic,Gemma-3-4B,Static Cowrie,1
+A120,c596ae5177a7,real,,,1
+A121,a473ab8de001,real,,,1
+A122,1e828f00aa66,real,,,1
+A123,bedrock_openai-google.gemma-3-4b-it-0-eb2b8175,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A124,59c47950ef91,real,,,1
+A125,bedrock_openai-google.gemma-3-4b-it-0-e7d54911,synthetic,Gemma-3-4B,Static Cowrie,1
+A126,12def45173d3,real,,,1
+A127,bedrock_openai-google.gemma-3-4b-it-2-26cb04b1,synthetic,Gemma-3-4B,Static Cowrie,1
+A128,bedrock_openai-deepseek.v3.2-1-0b549f6b,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A129,bedrock_openai-deepseek.v3.2-0-338d9d51,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A130,bedrock_openai-openai.gpt-oss-120b-0-c7a3209c,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A131,28eb33f6c5d9,real,,,1
+A132,a665828d6f43,real,,,1
+A133,bedrock_openai-deepseek.v3.2-3-317356da,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A134,bedrock_openai-deepseek.v3.2-1-15d757a6,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A135,339ac14626b2,real,,,1
+A136,bedrock_openai-google.gemma-3-4b-it-0-0a757879,synthetic,Gemma-3-4B,Static Cowrie,1
+A137,5ecf10596c67,real,,,1
+A138,bedrock_openai-openai.gpt-oss-120b-0-0eb3fd54,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A139,bedrock_openai-google.gemma-3-4b-it-1-6dd3c7cf,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A140,1617a542c54e,real,,,2
+A141,bedrock_openai-deepseek.v3.2-0-d08c8caa,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A142,bedrock_openai-deepseek.v3.2-2-aec13592,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A143,bedrock_openai-deepseek.v3.2-2-f7160697,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A144,47bdba242dcf,real,,,8
+A145,bedrock_openai-google.gemma-3-4b-it-0-29f3f7a4,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A146,bedrock_openai-openai.gpt-oss-120b-1-405ce569,synthetic,GPT-OSS-120B,Static Cowrie,1
+A147,c3d6f2a0333c,real,,,1
+A148,bedrock_openai-deepseek.v3.2-2-9665f8eb,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A149,bedrock_openai-openai.gpt-oss-120b-0-f37f7dad,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A150,6db0d7a0db60,real,,,4
+A151,bedrock_openai-openai.gpt-oss-120b-0-b5d4b2f3,synthetic,GPT-OSS-120B,Static Cowrie,1
+A152,bedrock_openai-deepseek.v3.2-2-ae50b6f0,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A153,bedrock_openai-openai.gpt-oss-120b-1-fcd57a42,synthetic,GPT-OSS-120B,Static Cowrie,1
+A154,767a03b0fd51,real,,,1
+A155,005db7ff3e37,real,,,1038
+A156,bedrock_openai-deepseek.v3.2-0-f652df46,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A157,bedrock_openai-openai.gpt-oss-120b-0-7091bec9,synthetic,GPT-OSS-120B,Static Cowrie,1
+A158,bedrock_openai-google.gemma-3-4b-it-1-2221a26f,synthetic,Gemma-3-4B,Static Cowrie,1
+A159,bedrock_openai-deepseek.v3.2-0-042e74d1,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A160,bedrock_openai-google.gemma-3-4b-it-0-c44002da,synthetic,Gemma-3-4B,Static Cowrie,1
+A161,bedrock_openai-openai.gpt-oss-120b-2-aea77ce7,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A162,a8c1dbeea684,real,,,1
+A163,bedrock_openai-openai.gpt-oss-120b-0-4dba7a41,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A164,dbf23c54dc39,real,,,1
+A165,bedrock_openai-openai.gpt-oss-120b-0-989405d6,synthetic,GPT-OSS-120B,Static Cowrie,1
+A166,bedrock_openai-google.gemma-3-4b-it-2-4f56d003,synthetic,Gemma-3-4B,Dynamic Qwen-32B,1
+A167,bedrock_openai-deepseek.v3.2-0-37899938,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A168,badb4c410626,real,,,1
+A169,3de1d826027e,real,,,1
+A170,0b0beca37b6d,real,,,1
+A171,0dc69a6d1ae9,real,,,1
+A172,bedrock_openai-google.gemma-3-4b-it-0-e2ea09bd,synthetic,Gemma-3-4B,Static Cowrie,1
+A173,bedrock_openai-openai.gpt-oss-120b-0-7aa07a78,synthetic,GPT-OSS-120B,Static Cowrie,1
+A174,34870e123c2d,real,,,1
+A175,bedrock_openai-openai.gpt-oss-120b-0-348664a8,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1
+A176,bedrock_openai-openai.gpt-oss-120b-2-ace80672,synthetic,GPT-OSS-120B,Static Cowrie,1
+A177,50ec6721720a,real,,,1
+A178,64f22720b76e,real,,,1
+A179,bedrock_openai-deepseek.v3.2-0-10b29809,synthetic,DeepSeek-V3.2,Dynamic Qwen-32B,1
+A180,bedrock_openai-deepseek.v3.2-0-789e16e7,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A181,bedrock_openai-deepseek.v3.2-0-ec96d10b,synthetic,DeepSeek-V3.2,Static Cowrie,1
+A182,09051c39f7dc,real,,,63
+A183,5508e1821a2a,real,,,1
+A184,bedrock_openai-openai.gpt-oss-120b-0-d78e3295,synthetic,GPT-OSS-120B,Dynamic Qwen-32B,1

@@ -1,0 +1,21 @@
+# Large datasets: cite the Zenodo DOI instead of committing
+cyberlab_2019-11-15.json/
+*.json.gz
+normalized/real_organic.jsonl
+
+# Secrets / local config
+.env
+.claude/settings.local.json
+
+# Python / editor noise
+__pycache__/
+*.pyc
+tempCodeRunnerFile.py
+.trunk/
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out

@@ -1,0 +1,225 @@
+{
+  "DeepSeek-V3.2 | Static": {
+    "n_sessions": 20,
+    "completed": 19,
+    "refused": 1,
+    "mean_turns": 13.5,
+    "median_turns": 12.5,
+    "total_commands": 270,
+    "unique_commands": 124,
+    "mean_latency": 4.401052,
+    "median_latency": 1.656,
+    "categories": {
+      "recon": 120,
+      "credential_hunting": 74,
+      "other": 69,
+      "privilege_escalation": 2,
+      "exfil_or_download": 3,
+      "persistence": 2
+    },
+    "leak_sessions": 0,
+    "statuses": {
+      "completed": 19,
+      "max_turns_reached": 0,
+      "connection_lost": 0,
+      "llm_error": 0,
+      "attacker_refused": 1,
+      "timed_out": 0
+    },
+    "other_statuses": {},
+    "pct": {
+      "recon": 44.44444444444444,
+      "credential_hunting": 27.40740740740741,
+      "privilege_escalation": 0.7407407407407407,
+      "persistence": 0.7407407407407407,
+      "exfil_or_download": 1.1111111111111112,
+      "destructive": 0.0
+    }
+  },
+  "DeepSeek-V3.2 | Dynamic (Qwen-32B)": {
+    "n_sessions": 20,
+    "completed": 20,
+    "refused": 0,
+    "mean_turns": 16.85,
+    "median_turns": 17.5,
+    "total_commands": 337,
+    "unique_commands": 148,
+    "mean_latency": 3.649895899053628,
+    "median_latency": 1.5,
+    "categories": {
+      "recon": 156,
+      "credential_hunting": 116,
+      "privilege_escalation": 7,
+      "other": 69,
+      "persistence": 3
+    },
+    "leak_sessions": 0,
+    "statuses": {
+      "completed": 20,
+      "max_turns_reached": 0,
+      "connection_lost": 0,
+      "llm_error": 0,
+      "attacker_refused": 0,
+      "timed_out": 0
+    },
+    "other_statuses": {},
+    "pct": {
+      "recon": 46.29080118694362,
+      "credential_hunting": 34.4213649851632,
+      "privilege_escalation": 2.077151335311573,
+      "persistence": 0.8902077151335311,
+      "exfil_or_download": 0.0,
+      "destructive": 0.0
+    }
+  },
+  "Gemma-3-4B | Static": {
+    "n_sessions": 20,
+    "completed": 19,
+    "refused": 0,
+    "mean_turns": 21,
+    "median_turns": 22.0,
+    "total_commands": 420,
+    "unique_commands": 158,
+    "mean_latency": 4.4330293398533005,
+    "median_latency": 1.656,
+    "categories": {
+      "recon": 241,
+      "persistence": 17,
+      "credential_hunting": 46,
+      "other": 91,
+      "exfil_or_download": 2,
+      "privilege_escalation": 29
+    },
+    "leak_sessions": 0,
+    "statuses": {
+      "completed": 11,
+      "max_turns_reached": 8,
+      "connection_lost": 0,
+      "llm_error": 0,
+      "attacker_refused": 0,
+      "timed_out": 1
+    },
+    "other_statuses": {},
+    "pct": {
+      "recon": 57.38095238095238,
+      "credential_hunting": 10.952380952380953,
+      "privilege_escalation": 6.904761904761905,
+      "persistence": 4.0476190476190474,
+      "exfil_or_download": 0.47619047619047616,
+      "destructive": 0.0
+    }
+  },
+  "Gemma-3-4B | Dynamic (Qwen-32B)": {
+    "n_sessions": 20,
+    "completed": 20,
+    "refused": 0,
+    "mean_turns": 18.5,
+    "median_turns": 19.0,
+    "total_commands": 370,
+    "unique_commands": 199,
+    "mean_latency": 2.3821363636363637,
+    "median_latency": 1.062,
+    "categories": {
+      "recon": 177,
+      "credential_hunting": 74,
+      "other": 97,
+      "privilege_escalation": 26,
+      "persistence": 5,
+      "exfil_or_download": 4,
+      "destructive": 1
+    },
+    "leak_sessions": 0,
+    "statuses": {
+      "completed": 18,
+      "max_turns_reached": 2,
+      "connection_lost": 0,
+      "llm_error": 0,
+      "attacker_refused": 0,
+      "timed_out": 0
+    },
+    "other_statuses": {},
+    "pct": {
+      "recon": 47.83783783783784,
+      "credential_hunting": 20.0,
+      "privilege_escalation": 7.027027027027027,
+      "persistence": 1.3513513513513513,
+      "exfil_or_download": 1.0810810810810811,
+      "destructive": 0.2702702702702703
+    }
+  },
+  "GPT-OSS-120B | Static": {
+    "n_sessions": 20,
+    "completed": 20,
+    "refused": 0,
+    "mean_turns": 19.5,
+    "median_turns": 20.0,
+    "total_commands": 390,
+    "unique_commands": 280,
+    "mean_latency": 4.415785529715762,
+    "median_latency": 1.657,
+    "categories": {
+      "recon": 214,
+      "credential_hunting": 189,
+      "privilege_escalation": 54,
+      "persistence": 23,
+      "other": 37,
+      "exfil_or_download": 1
+    },
+    "leak_sessions": 11,
+    "statuses": {
+      "completed": 3,
+      "max_turns_reached": 17,
+      "connection_lost": 0,
+      "llm_error": 0,
+      "attacker_refused": 0,
+      "timed_out": 0
+    },
+    "other_statuses": {},
+    "pct": {
+      "recon": 54.87179487179487,
+      "credential_hunting": 48.46153846153846,
+      "privilege_escalation": 13.846153846153847,
+      "persistence": 5.897435897435898,
+      "exfil_or_download": 0.2564102564102564,
+      "destructive": 0.0
+    }
+  },
+  "GPT-OSS-120B | Dynamic (Qwen-32B)": {
+    "n_sessions": 20,
+    "completed": 4,
+    "refused": 0,
+    "mean_turns": 16.25,
+    "median_turns": 16.0,
+    "total_commands": 325,
+    "unique_commands": 233,
+    "mean_latency": 5.508697749196141,
+    "median_latency": 1.516,
+    "categories": {
+      "recon": 128,
+      "credential_hunting": 212,
+      "privilege_escalation": 25,
+      "other": 23,
+      "destructive": 1,
+      "persistence": 18,
+      "exfil_or_download": 4
+    },
+    "leak_sessions": 7,
+    "statuses": {
+      "completed": 4,
+      "max_turns_reached": 0,
+      "connection_lost": 10,
+      "llm_error": 6,
+      "attacker_refused": 0,
+      "timed_out": 0
+    },
+    "other_statuses": {},
+    "pct": {
+      "recon": 39.38461538461539,
+      "credential_hunting": 65.23076923076923,
+      "privilege_escalation": 7.6923076923076925,
+      "persistence": 5.538461538461538,
+      "exfil_or_download": 1.2307692307692308,
+      "destructive": 0.3076923076923077
+    }
+  }
+}

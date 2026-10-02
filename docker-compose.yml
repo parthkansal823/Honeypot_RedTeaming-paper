@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # ==============================================================================
+  # Cowrie Honeypot Service (Isolated Target Environment)
+  # ==============================================================================
+  cowrie:
+    image: cowrie/cowrie:latest
+    container_name: cowrie-honeypot
+    ports:
+      - "2222:2222"
+    volumes:
+      - ./cowrie_etc/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro
+      - cowrie-data:/cowrie/cowrie-git/var
+      - ./var/log/cowrie:/cowrie/cowrie-git/var/log/cowrie
+    environment:
+      - BEDROCK_API_KEY=${BEDROCK_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    restart: unless-stopped
+    networks:
+      - honeypot-net
+
+  # ==============================================================================
+  # AI Attacker & Evaluation Pipeline Service
+  # ==============================================================================
+  attacker:
+    build:
+      context: .
+      dockerfile: Dockerfile.attacker
+    container_name: ai-attacker-evaluator
+    depends_on:
+      - cowrie
+    volumes:
+      - ./logs:/app/logs
+      - ./normalized:/app/normalized
+      - ./results:/app/results
+      - ./var/log/cowrie:/app/var/log/cowrie:ro
+      - .:/app
+    environment:
+      - BEDROCK_API_KEY=${BEDROCK_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    networks:
+      - honeypot-net
+    command: python generate_paper_tables.py
+
+networks:
+  honeypot-net:
+    driver: bridge
+
+volumes:
+  cowrie-data:

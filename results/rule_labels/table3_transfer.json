@@ -1,0 +1,130 @@
+{
+  "label_source": "rule",
+  "label_distribution": {
+    "synthetic": {
+      "recon": 3,
+      "credential_access": 43,
+      "privilege_escalation": 23,
+      "persistence": 42,
+      "malware_drop": 9,
+      "resource_hijacking": 0,
+      "defense_evasion": 0,
+      "other": 0
+    },
+    "real": {
+      "recon": 55,
+      "credential_access": 0,
+      "privilege_escalation": 0,
+      "persistence": 13,
+      "malware_drop": 52,
+      "resource_hijacking": 1470,
+      "defense_evasion": 0,
+      "other": 82
+    },
+    "real_dedup": {
+      "recon": 4,
+      "credential_access": 0,
+      "privilege_escalation": 0,
+      "persistence": 3,
+      "malware_drop": 6,
+      "resource_hijacking": 5,
+      "defense_evasion": 0,
+      "other": 4
+    }
+  },
+  "quadrants": [
+    {
+      "id": "Q1",
+      "train": "synthetic",
+      "test": "synthetic",
+      "macro_f1": 0.5528194280045247,
+      "accuracy": 0.7166666666666667,
+      "predicted": {
+        "credential_access": 48,
+        "persistence": 37,
+        "privilege_escalation": 30,
+        "malware_drop": 5
+      },
+      "majority_macro_f1": 0.10552147239263802,
+      "majority_accuracy": 0.35833333333333334,
+      "n_train": 80,
+      "n_test": 120
+    },
+    {
+      "id": "Q2",
+      "train": "real",
+      "test": "real",
+      "macro_f1": 0.5570074883996667,
+      "accuracy": 0.9264354066985646,
+      "predicted": {
+        "resource_hijacking": 1470,
+        "recon": 82,
+        "malware_drop": 49,
+        "other": 62,
+        "persistence": 9
+      },
+      "majority_macro_f1": 0.18714194780394652,
+      "majority_accuracy": 0.8791866028708134,
+      "n_train": 1337,
+      "n_test": 1672
+    },
+    {
+      "id": "Q3",
+      "train": "synthetic",
+      "test": "real",
+      "macro_f1": 0.0,
+      "accuracy": 0.0,
+      "predicted": {
+        "credential_access": 1671,
+        "privilege_escalation": 1
+      },
+      "majority_macro_f1": 0.0,
+      "majority_accuracy": 0.0,
+      "n_train": 120,
+      "n_test": 1672
+    },
+    {
+      "id": "Q3_dedup",
+      "train": "synthetic",
+      "test": "real_dedup",
+      "macro_f1": 0.0,
+      "accuracy": 0.0,
+      "predicted": {
+        "credential_access": 21,
+        "privilege_escalation": 1
+      },
+      "majority_macro_f1": 0.0,
+      "majority_accuracy": 0.0,
+      "n_train": 120,
+      "n_test": 22
+    },
+    {
+      "id": "Q4",
+      "train": "real+synthetic",
+      "test": "real",
+      "macro_f1": 0.5531229232942105,
+      "accuracy": 0.9264354066985646,
+      "predicted": {
+        "resource_hijacking": 1469,
+        "recon": 82,
+        "malware_drop": 49,
+        "other": 62,
+        "persistence": 10
+      },
+      "majority_macro_f1": 0.18714194780394652,
+      "majority_accuracy": 0.8791866028708134,
+      "n_train": 1457,
+      "n_test": 1672
+    }
+  ],
+  "q3_per_class_f1": {
+    "recon": 0.0,
+    "credential_access": 0.0,
+    "privilege_escalation": 0.0,
+    "persistence": 0.0,
+    "malware_drop": 0.0,
+    "resource_hijacking": 0.0,
+    "defense_evasion": 0.0,
+    "other": 0.0
+  }
+}

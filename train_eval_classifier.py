@@ -1,225 +1,210 @@
 """
-Extract features from session records and run the train/test matrix:
-synthetic->synthetic, synthetic->real, real->real, real+synthetic->real.
+4-quadrant transfer experiment: synthetic vs real training data -> synthetic vs real test data.
 
-Deliberately simple (TF-IDF over command text + a few numeric session
-features -> Random Forest), because the question is about the DATA
-SOURCE, not classifier sophistication. A fancier model would only make
-it harder to tell whether a result is about the data or about the model.
+Q1 synth->synth (StratifiedKFold), Q2 real->real (GroupKFold by command template),
+Q3 synth->real, Q4 real+synth->real (same folds as Q2).
 
-LABEL PROVENANCE -- read this before trusting any number out of this script:
-  - Synthetic sessions (from synthetic_session_generator.py) carry a clean
-    ground-truth `archetype` label, because you told the model what to write.
-  - Real sessions (from cowrie_session_parser.py) do NOT have a ground-truth
-    archetype -- only heuristic keyword-based `findings` flags. This script
-    can derive a weak label from those flags (see weak_label()) so you can
-    exercise the pipeline today, but that label was built from the same
-    keywords your features are built from. A classifier "detecting" a
-    weak label is partly just detecting its own label-construction rule.
-    Treat weak-labeled results as a plumbing check, NOT a paper result.
-  - For the number you actually report, hand-label a subset of real
-    sessions yourself (skim the transcript, assign one of the 6 archetypes
-    or "other") and pass it via --real-labels as a CSV: session_id,label.
-    A few hundred is plenty -- these are short.
+Labels: rule_label() (same function for both domains) unless --real-labels /
+--synthetic-labels CSVs (session_id,label) are supplied. Rule labels are built from
+the same keywords as the features -> PLUMBING CHECK only, not a paper result.
 
 Usage:
-    pip install scikit-learn --break-system-packages
-
-    python train_eval_classifier.py \
-        --synthetic claude_synthetic.jsonl gemini_synthetic.jsonl \
-        --real real_sessions.jsonl \
-        --real-labels hand_labeled.csv
+  python train_eval_classifier.py --synthetic normalized/all_synthetic_120.jsonl \
+      --real normalized/real_organic.jsonl [--real-labels CSV] [--synthetic-labels CSV]
 """
-
-import json
 import argparse
 import csv
+import json
+import os
 from collections import Counter
 
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import StratifiedKFold, cross_val_predict
-from sklearn.metrics import classification_report, confusion_matrix
 from scipy.sparse import hstack, csr_matrix
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.model_selection import GroupKFold, StratifiedKFold
 
-# Priority order for turning heuristic `findings` flags into a single
-# weak label. Same taxonomy as ARCHETYPES in synthetic_session_generator.py --
-# keep these in sync if you change one.
-WEAK_LABEL_PRIORITY = [
-    ("malware_staging", "payload_download_attempt"),
-    ("persistence_attempt", "persistence_attempt"),
-    ("defense_evasion", "defense_evasion"),
-    ("credential_bruteforce_then_recon", "credential_bruteforce"),
-    ("recon_only", "reconnaissance"),
-]
+from session_features import load_jsonl, normalize_cmd, session_tactics, template_key
+
+LABELS = ["recon", "credential_access", "privilege_escalation", "persistence",
+          "malware_drop", "resource_hijacking", "defense_evasion", "other"]
+SEED = 42
 
 
-def load_sessions(paths):
+def rule_label(s):
+    t = session_tactics(s)
+    if "resource_hijacking" in t:
+        return "resource_hijacking"
+    if "ingress_tool_transfer" in t:
+        return "malware_drop"
+    if "persistence" in t or "account_manipulation" in t:
+        return "persistence"
+    if "privilege_escalation" in t:
+        return "privilege_escalation"
+    if "credential_access" in t:
+        return "credential_access"
+    if "defense_evasion" in t:
+        return "defense_evasion"
+    if "discovery" in t:
+        return "recon"
+    return "other"
+
+
+def load_labels(path):
+    with open(path, encoding="utf-8-sig") as f:
+        return {r["session_id"]: r["label"] for r in csv.DictReader(f)}
+
+
+def text_of(sessions):
+    return [" ".join(normalize_cmd(c) for c in s["commands"]) for s in sessions]
+
+
+def numeric(sessions):
     rows = []
-    for path in paths:
-        with open(path) as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    rows.append(json.loads(line))
-    return rows
+    for s in sessions:
+        cmds = s["commands"]
+        lens = [len(normalize_cmd(c)) for c in cmds]
+        chained = [any(x in c for x in ("&&", ";", "|")) for c in cmds]
+        rows.append([len(cmds), float(np.mean(lens)), float(np.mean(chained))])
+    return np.array(rows)
 
 
-def load_hand_labels(path):
-    with open(path) as f:
-        return {row["session_id"]: row["label"] for row in csv.DictReader(f)}
+def fit_predict(train, test, ytr):
+    vec = TfidfVectorizer(token_pattern=r"[^\s]+", max_features=2000)
+    Xtr = hstack([vec.fit_transform(text_of(train)), csr_matrix(numeric(train))]).tocsr()
+    Xte = hstack([vec.transform(text_of(test)), csr_matrix(numeric(test))]).tocsr()
+    clf = RandomForestClassifier(n_estimators=300, class_weight="balanced",
+                                 random_state=SEED, n_jobs=-1)
+    clf.fit(Xtr, ytr)
+    return list(clf.predict(Xte))
 
 
-def weak_label(session):
-    findings = set(session.get("findings", []))
-    for label, flag in WEAK_LABEL_PRIORITY:
-        if flag in findings:
-            return label
-    if session.get("command_count", 0) == 0:
-        return "login_only"  # automated bot noise, not one of the 6 archetypes
-    return "interactive_manual_probe"
+def majority(ytr, n):
+    return [Counter(ytr).most_common(1)[0][0]] * n
 
 
-def featurize(sessions, vectorizer=None, fit=False):
-    command_text = [" ".join(s.get("commands") or []) for s in sessions]
-    if fit:
-        vectorizer = TfidfVectorizer(max_features=500, token_pattern=r"[^\s]+", min_df=1)
-        text_features = vectorizer.fit_transform(command_text)
-    else:
-        text_features = vectorizer.transform(command_text)
-
-    numeric = np.array([[
-        s.get("command_count", 0) or 0,
-        s.get("login_attempt_count", 0) or 0,
-        s.get("duration_s") or 0,
-        len(s.get("downloads") or []),
-    ] for s in sessions], dtype=float)
-
-    return hstack([text_features, csr_matrix(numeric)]), vectorizer
-
-
-def new_forest():
-    return RandomForestClassifier(n_estimators=300, random_state=42, class_weight="balanced")
+def row(qid, train, test, yt, yp, ym, ntr):
+    # Average F1 over classes that occur in the test set only; otherwise a predicted
+    # class with zero support adds a 0 to the mean and fakes a drop.
+    present = sorted(set(yt))
+    return {"id": qid, "train": train, "test": test,
+            "macro_f1": float(f1_score(yt, yp, labels=present, average="macro", zero_division=0)),
+            "accuracy": float(accuracy_score(yt, yp)),
+            "predicted": dict(Counter(yp)),
+            "majority_macro_f1": float(f1_score(yt, ym, labels=present, average="macro", zero_division=0)),
+            "majority_accuracy": float(accuracy_score(yt, ym)),
+            "n_train": int(ntr), "n_test": int(len(yt))}
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__,
-                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--synthetic", nargs="*", default=[])
-    ap.add_argument("--real", nargs="*", default=[])
-    ap.add_argument("--real-labels", default=None, help="CSV: session_id,label (hand-labeled subset)")
-    ap.add_argument("--synthetic-labels", default=None,
-                     help="CSV: session_id,label - hand labels for LIVE AGENTIC synthetic sessions. "
-                          "Not needed for fabricated-transcript sessions that already carry a "
-                          "prompted `archetype` - but see the docstring caveat about what that label "
-                          "actually proves before trusting it as your reported number.")
-    ap.add_argument("--min-real-commands", type=int, default=1,
-                     help="Drop real sessions with fewer commands than this before evaluation "
-                          "(default 1). Real traffic is dominated by zero-command login-only bot "
-                          "noise that neither the synthetic generator nor the live attacker "
-                          "produces; leaving it in silently turns synth->real into a "
-                          "class-coverage artifact rather than a measurement of realism.")
-    args = ap.parse_args()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--synthetic", required=True)
+    ap.add_argument("--real", required=True)
+    ap.add_argument("--real-labels")
+    ap.add_argument("--synthetic-labels")
+    ap.add_argument("--label-source", default="human",
+                    help="Provenance name reported when label CSVs are given, e.g. 'llm-dual'.")
+    ap.add_argument("--out-dir", default="results")
+    a = ap.parse_args()
 
-    synthetic = load_sessions(args.synthetic)
-    real_all = load_sessions(args.real)
-    real = [s for s in real_all if s.get("command_count", 0) >= args.min_real_commands]
-    if len(real) < len(real_all):
-        print(f"Filtered real sessions to command_count >= {args.min_real_commands}: "
-              f"{len(real_all)} -> {len(real)} (dropped {len(real_all) - len(real)} "
-              f"non-interactive/login-only sessions - see --min-real-commands)")
-
-    hand_labels_synth = load_hand_labels(args.synthetic_labels) if args.synthetic_labels else {}
-    for s in synthetic:
-        s["label"] = hand_labels_synth.get(s["session_id"]) or s.get("archetype") or weak_label(s)
-    synthetic_hand = [s for s in synthetic if s["session_id"] in hand_labels_synth]
-    synthetic_prompted = [s for s in synthetic
-                           if s["session_id"] not in hand_labels_synth and s.get("archetype")]
-    synthetic_weak = [s for s in synthetic
-                       if s["session_id"] not in hand_labels_synth and not s.get("archetype")]
-
-    hand_labels = load_hand_labels(args.real_labels) if args.real_labels else {}
+    syn = [s for s in load_jsonl(a.synthetic) if s.get("commands")]
+    real = [s for s in load_jsonl(a.real) if s.get("commands")]
+    for ss, path in ((syn, a.synthetic_labels), (real, a.real_labels)):
+        hl = load_labels(path) if path else {}
+        for s in ss:
+            s["label"] = hl.get(s["session_id"]) or rule_label(s)
+    src = a.label_source if (a.real_labels or a.synthetic_labels) else "rule"
     for s in real:
-        s["label"] = hand_labels.get(s["session_id"], weak_label(s))
-    real_hand = [s for s in real if s["session_id"] in hand_labels]
-    real_weak = [s for s in real if s["session_id"] not in hand_labels]
+        s["tpl"] = template_key(s)
+    ys = [s["label"] for s in syn]
+    yr = [s["label"] for s in real]
+    tpl_ids = {t: i for i, t in enumerate(dict.fromkeys(s["tpl"] for s in real))}
+    groups = [tpl_ids[s["tpl"]] for s in real]
+    print(f"synthetic n={len(syn)}, real n={len(real)}, templates={len(tpl_ids)}")
 
-    if not synthetic and not real:
-        print("Nothing to do -- pass --synthetic and/or --real.")
-        return
+    # Q1
+    k = max(2, min(5, min(Counter(ys).values())))
+    yp, ym, yt = [], [], []
+    for tr, te in StratifiedKFold(k, shuffle=True, random_state=SEED).split(syn, ys):
+        ytr = [ys[i] for i in tr]
+        yp += fit_predict([syn[i] for i in tr], [syn[i] for i in te], ytr)
+        ym += majority(ytr, len(te))
+        yt += [ys[i] for i in te]
+    q1 = row("Q1", "synthetic", "synthetic", yt, yp, ym, len(syn) * (k - 1) // k)
 
-    print(f"Loaded: {len(synthetic)} synthetic ({len(synthetic_hand)} hand-labeled, "
-          f"{len(synthetic_prompted)} prompted-archetype, {len(synthetic_weak)} weak-labeled), "
-          f"{len(real)} real ({len(real_hand)} hand-labeled, {len(real_weak)} weak-labeled).")
-    if synthetic_prompted:
-        print(f"! {len(synthetic_prompted)} synthetic session(s) are labeled with the same "
-              f"archetype used to generate them. Any result built on these measures whether the "
-              f"model can reproduce a stereotype it was handed, not whether synthetic data "
-              f"resembles real attacker behavior. Hand-label a blind sample via --synthetic-labels "
-              f"for the number you actually report.")
+    # Q2 / Q4 on identical template-grouped folds
+    p2, p4, m2, yt2, ntr = [], [], [], [], []
+    for tr, te in GroupKFold(5).split(real, yr, groups):
+        a_ = [real[i] for i in tr]
+        b_ = [real[i] for i in te]
+        ytr = [yr[i] for i in tr]
+        p2 += fit_predict(a_, b_, ytr)
+        m2 += majority(ytr, len(te))
+        p4 += fit_predict(a_ + syn, b_, ytr + ys)
+        yt2 += [yr[i] for i in te]
+        ntr.append(len(tr))
+    n2 = int(np.mean(ntr))
+    q2 = row("Q2", "real", "real", yt2, p2, m2, n2)
+    q4 = row("Q4", "real+synthetic", "real", yt2, p4, m2, n2 + len(syn))
 
-    # --- Condition 1: synthetic -> synthetic, 5-fold CV. Sanity check only. ---
-    if len(synthetic) >= 20:
-        X, _ = featurize(synthetic, fit=True)
-        y = [s["label"] for s in synthetic]
-        k = max(2, min(5, min(Counter(y).values())))
-        preds = cross_val_predict(new_forest(), X, y, cv=StratifiedKFold(k, shuffle=True, random_state=42))
-        print(f"\n=== synthetic -> synthetic ({k}-fold CV) === [sanity check, not a transfer result]")
-        print(classification_report(y, preds, zero_division=0))
+    # Q3
+    p3 = fit_predict(syn, real, ys)
+    m3 = majority(ys, len(real))
+    q3 = row("Q3", "synthetic", "real", yr, p3, m3, len(syn))
+    first = {}
+    for i, s in enumerate(real):
+        first.setdefault(s["tpl"], i)
+    idx = list(first.values())
+    q3d = row("Q3_dedup", "synthetic", "real_dedup", [yr[i] for i in idx],
+              [p3[i] for i in idx], [m3[i] for i in idx], len(syn))
+    f1c = f1_score(yr, p3, labels=LABELS, average=None, zero_division=0)
+    q3pc = {l: float(f) for l, f in zip(LABELS, f1c)}
 
-    # --- Condition 2: synthetic -> real. THE core question. ---
-    if synthetic and real:
-        test_set = real_hand or real_weak
-        note = "hand-labeled" if real_hand else "WEAK-LABELED -- plumbing check only, see caveat in docstring"
-        X_train, vec = featurize(synthetic, fit=True)
-        y_train = [s["label"] for s in synthetic]
-        X_test, _ = featurize(test_set, vectorizer=vec, fit=False)
-        y_test = [s["label"] for s in test_set]
-        clf = new_forest().fit(X_train, y_train)
-        preds = clf.predict(X_test)
-        print(f"\n=== synthetic -> real ({note}) ===")
-        print(f"train n={X_train.shape[0]}, test n={X_test.shape[0]}")
-        print(classification_report(y_test, preds, zero_division=0))
-        labels = sorted(set(y_test) | set(preds))
-        print("confusion matrix", labels, "\n", confusion_matrix(y_test, preds, labels=labels))
+    dc = {"synthetic": Counter(ys), "real": Counter(yr),
+          "real_dedup": Counter(yr[i] for i in idx)}
+    dist = {d: {l: int(c.get(l, 0)) for l in LABELS} for d, c in dc.items()}
+    quads = [q1, q2, q3, q3d, q4]
+    os.makedirs(a.out_dir, exist_ok=True)
+    with open(os.path.join(a.out_dir, "table3_transfer.json"), "w") as f:
+        json.dump({"label_source": src, "label_distribution": dist, "quadrants": quads,
+                   "q3_per_class_f1": q3pc}, f, indent=2)
 
-    # --- Conditions 3 & 4: real->real vs real+synthetic->real, on IDENTICAL
-    #     held-out folds so the comparison is apples-to-apples and nothing
-    #     used for training ever appears in that fold's test set. ---
-    if len(real_hand) >= 10:
-        y_real = [s["label"] for s in real_hand]
-        k = max(2, min(5, min(Counter(y_real).values())))
-        skf = StratifiedKFold(k, shuffle=True, random_state=42)
-        real_only_preds, combined_preds, y_true = [], [], []
-
-        for train_idx, test_idx in skf.split(real_hand, y_real):
-            train_fold = [real_hand[i] for i in train_idx]
-            test_fold = [real_hand[i] for i in test_idx]
-            y_train_fold = [y_real[i] for i in train_idx]
-            y_test_fold = [y_real[i] for i in test_idx]
-
-            X_tr, vec = featurize(train_fold, fit=True)
-            X_te, _ = featurize(test_fold, vectorizer=vec, fit=False)
-            real_only_preds.extend(new_forest().fit(X_tr, y_train_fold).predict(X_te))
-
-            combined_train = train_fold + synthetic
-            y_combined = y_train_fold + [s["label"] for s in synthetic]
-            X_tr2, vec2 = featurize(combined_train, fit=True)
-            X_te2, _ = featurize(test_fold, vectorizer=vec2, fit=False)
-            combined_preds.extend(new_forest().fit(X_tr2, y_combined).predict(X_te2))
-
-            y_true.extend(y_test_fold)
-
-        print(f"\n=== real -> real ({k}-fold, hand-labeled only) === [best-case baseline]")
-        print(classification_report(y_true, real_only_preds, zero_division=0))
-
-        if synthetic:
-            print(f"\n=== real + synthetic -> real (same {k} folds) === [does synthetic data help?]")
-            print(classification_report(y_true, combined_preds, zero_division=0))
-    else:
-        print("\n(Skipping real->real and real+synthetic->real: need >=10 hand-labeled "
-              "real sessions via --real-labels. Everything above still ran.)")
+    md = ["# Table 3: transfer between synthetic and real training data", ""]
+    if src == "rule":
+        md += ["> **PLUMBING CHECK - labels derived from same keywords as features.** Labels come "
+               "from `rule_label()` (ATT&CK-tactic keyword rules in `session_features.py`), the "
+               "same keywords that drive the TF-IDF features. These numbers are NOT a paper "
+               "result; re-run with `--real-labels` / `--synthetic-labels` human labels.", ""]
+    md += [f"Label source: **{src}**. Sessions with >=1 command only. TF-IDF (normalized "
+           "commands) + 3 numeric features, RandomForest(300, balanced, seed 42). "
+           f"Q1: stratified {k}-fold; Q2/Q4: GroupKFold(5) by command template; Q3_dedup: one "
+           "session per template. CV metrics pooled over folds. Majority baseline predicts the "
+           "training-set majority class.", "",
+           "| Quadrant | Train | Test | n_train | n_test | Macro-F1 | Accuracy | "
+           "Majority macro-F1 | Majority acc |",
+           "|---|---|---|---|---|---|---|---|---|"]
+    for q in quads:
+        md.append(f"| {q['id']} | {q['train']} | {q['test']} | {q['n_train']} | {q['n_test']} | "
+                  f"{q['macro_f1']:.3f} | {q['accuracy']:.3f} | {q['majority_macro_f1']:.3f} | "
+                  f"{q['majority_accuracy']:.3f} |")
+    md += ["", "## Label distribution", "",
+           "| Label | Synthetic | Real (sessions) | Real (dedup templates) |", "|---|---|---|---|"]
+    for l in LABELS:
+        md.append(f"| {l} | {dist['synthetic'][l]} | {dist['real'][l]} | {dist['real_dedup'][l]} |")
+    md.append("| **total** | " + " | ".join(str(sum(dist[d].values())) for d in dist) + " |")
+    md += ["", "## Q3 per-class F1 (synthetic -> real, session-weighted)", "",
+           "| Label | F1 |", "|---|---|"]
+    md += [f"| {l} | {q3pc[l]:.3f} |" for l in LABELS]
+    md += ["", "## Predicted label counts per quadrant", "",
+           "| Quadrant | " + " | ".join(LABELS) + " |", "|---|" + "---|" * len(LABELS)]
+    md += [f"| {q['id']} | " + " | ".join(str(q["predicted"].get(l, 0)) for l in LABELS) + " |"
+           for q in quads]
+    md += ["", "Macro-F1 averages only over classes present in the test set. Real labels are "
+           f"broadcast from templates, so the effective real sample size is {len(idx)} templates."]
+    with open(os.path.join(a.out_dir, "table3_transfer.md"), "w") as f:
+        f.write("\n".join(md) + "\n")
+    print("\n".join(md))
 
 
 if __name__ == "__main__":
