@@ -391,7 +391,7 @@ Table: Research questions, hypotheses and outcomes. {#tab:answers widths=2,7,7}
 
 | ID | Outcome | Evidence |
 |---|---|---|
-| RQ1 | The three attackers behaved very differently under the same prompt (session length, variety, interest in secrets, how sessions ended) | Tables 4.4 and 4.5; Figures 4.8–4.13 |
+| RQ1 | The three attackers behaved very differently under the same prompt (session length, variety, interest in secrets, how sessions ended) | [@tab:attackers], [@tab:status-counts]; [@fig:attacker-cats] to [@fig:status] |
 | RQ2 | Synthetic and real sessions are almost perfectly separable; the gap is about intent | JSD 0.700; C2ST AUC 1.000 (verbs only 0.996); tactic profiles |
 | RQ3 | No transfer and no augmentation benefit | Q3 macro-F1 0.205 (dedup 0.071) vs Q2 0.983; Q4 0.981 |
 | RQ4 | The LLM backend helped only the smallest attacker and raised credential hunting for all | Gemma JSD 0.798 → 0.746; others unchanged within CI |
@@ -444,12 +444,44 @@ Table: Testing and validation checks. {#tab:tests widths=4,6,6}
 | Reply boundaries | `validate_logs.py` scans logs for leaked markers and repeated prompts | Used to reject an earlier marker-based design |
 | Recovery | Frozen-honeypot events logged in `infra_events.log` | Recovery attempts recorded with timestamps (for example during the DeepSeek static batch) |
 | Parser correctness | Session count and field checks after parsing | 76,785 sessions; 1,672 interactive; matches the dataset's structure |
-| Normaliser | Worked examples run through the real code (Figure 3.13) | Masks and splits behave as designed; one URL quirk documented |
+| Normaliser | Worked examples run through the real code ([@fig:normalisation]) | Masks and splits behave as designed; one URL quirk documented |
 | Leakage | GroupKFold by template; Q3-dedup | No template in both train and test |
 | Label reliability | Cohen's κ; disagreement file; adjudication | κ = 0.898; 12 adjudicated |
 | Sensitivity | dota relabel run; rule-label plumbing run | Conclusions unchanged |
 | Reproducibility | Fixed seed 42; scripts regenerate `results/` | Same numbers on rerun |
 | Report numbers | Every number traced to `results/` or `report/data/` | Checked while writing |
+
+### 4.13.1 Software testing strategy
+
+Testing followed the usual four levels ([@tab:test-levels]). Because this is research software, the most important tests are not about whether a function runs but about whether a number can be trusted, so several tests compare an output with an independent count or a hand-worked example.
+
+Table: Testing levels. {#tab:test-levels widths=3,6,7}
+
+| Level | What was tested | How |
+|---|---|---|
+| Unit | Normalisation, segment splitting, verbs, tactic tags, macro-F1 over present classes | Worked examples run through the real functions ([@fig:normalisation]) |
+| Integration | Raw file → parser → normalised sessions → analysis scripts | Session and template counts compared across stages |
+| System | The full pipeline from logs and raw data to `results/` | Every script run end to end; outputs checked against each other |
+| Acceptance | Every number in the paper and this report | Traced to a file in `results/` or `report/data/`; supervisor review |
+
+### 4.13.2 Test cases
+
+Table: Test cases with expected and observed results. {#tab:testcases widths=2,6,4,4,2}
+
+| ID | Test | Expected | Observed | Result |
+|---|---|---|---|---|
+| TC-01 | Parse the CyberLab file | All sessions read | 76,785 sessions; 1,672 with commands | Pass |
+| TC-02 | Run the native Cowrie parser on the CyberLab file | Shows the format mismatch | Zero sessions, no error | Pass (pitfall confirmed) |
+| TC-03 | Normalise `echo "root:…"\|chpasswd\|bash` | Password masked | `echo <str>\|chpasswd\|bash` | Pass |
+| TC-04 | Normalise `/bin/busybox QWERT` | Random tag masked | `/bin/busybox <tag>` | Pass |
+| TC-05 | Split `cat /proc/cpuinfo \| grep name \| wc -l` | Three segments | Verbs `cat`, `grep`, `wc` | Pass |
+| TC-06 | Detect chat-format leakage | Leaks found only for GPT-OSS-120B | 11 static + 7 dynamic sessions | Pass |
+| TC-07 | Group real sessions into templates | Far fewer templates than sessions | 22 templates | Pass |
+| TC-08 | Grouped folds keep templates apart | No template in train and test | Holds by construction (GroupKFold) | Pass |
+| TC-09 | Agreement and final labels | κ computed on all items; every session labelled | κ = 0.898 on 184 items; 1,672 + 120 labelled | Pass |
+| TC-10 | Honeypot freeze is noticed | Event written to the infrastructure log | Recovery attempts logged on 27 September 2026 | Pass |
+| TC-11 | Report numbers match results | No number without a source file | Checked while writing | Pass |
+| TC-12 | Report build | All references cited and linked; no broken fields | 122 of 122 references linked; no field errors | Pass |
 
 ## 4.14 Report Preparation, Project Management and Communication
 

@@ -22,7 +22,7 @@ from matplotlib.patches import Ellipse, FancyBboxPatch, Polygon, Rectangle  # no
 
 FONT = "Arial"
 # Render-time text scale (labels are enlarged slightly so they stay legible on A4).
-FONT_SCALE = float(__import__("os").environ.get("DIAGRAM_FONT_SCALE", "1.3"))
+FONT_SCALE = float(__import__("os").environ.get("DIAGRAM_FONT_SCALE", "1.0"))
 
 # draw.io's default palette, so the .drawio files look native when opened.
 KIND_COLORS = {
@@ -37,6 +37,12 @@ KIND_COLORS = {
     "highlight": ("#F8CECC", "#B85450"),
     "plain": ("#FFFFFF", "#666666"),
     "group": ("#F7F7F7", "#888888"),
+    # UML-style shapes for the software diagrams
+    "usecase": ("#DAE8FC", "#6C8EBF"),
+    "actor": ("#FFFFFF", "#333333"),
+    "anchor": ("none", "none"),
+    "initial": ("#333333", "#333333"),
+    "final": ("#FFFFFF", "#333333"),
 }
 
 
@@ -88,6 +94,7 @@ class Edge:
     entry_f: float = 0.5
     points: list = field(default_factory=list)  # explicit waypoints
     dashed: bool = False
+    arrow: bool = True           # False for associations and sequence-diagram lifelines
     label_pos: float = 0.5       # where on the route the label sits (0..1 of length)
 
 
@@ -168,6 +175,11 @@ class Diagram:
             "highlight": "rounded=1;arcSize=12;strokeWidth=2;",
             "plain": "rounded=0;",
             "group": "rounded=1;arcSize=3;verticalAlign=top;dashed=0;container=0;",
+            "usecase": "ellipse;",
+            "actor": "shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;",
+            "anchor": "shape=waypoint;size=1;",
+            "initial": "ellipse;",
+            "final": "ellipse;shape=doubleEllipse;",
         }.get(n.kind, "rounded=1;")
         return shape + base
 
@@ -194,7 +206,8 @@ class Diagram:
             a, b = self.nodes[e.src], self.nodes[e.dst]
             ex = {"t": (e.exit_f, 0), "b": (e.exit_f, 1), "l": (0, e.exit_f), "r": (1, e.exit_f)}[s]
             en = {"t": (e.entry_f, 0), "b": (e.entry_f, 1), "l": (0, e.entry_f), "r": (1, e.entry_f)}[t]
-            style = (f"edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;"
+            style = (f"edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;"
+                     f"{'endArrow=block;endFill=1;' if e.arrow else 'endArrow=none;'}"
                      f"exitX={ex[0]};exitY={ex[1]};exitDx=0;exitDy=0;entryX={en[0]};entryY={en[1]};entryDx=0;entryDy=0;"
                      f"fontFamily={FONT};fontSize=11;labelBackgroundColor=#FFFFFF;")
             if e.dashed:
@@ -217,6 +230,12 @@ class Diagram:
         if n.kind == "group":
             ax.text(n.x + 10, n.y + 8, n.label, ha="left", va="top", fontsize=fs + 0.5, fontweight="bold",
                     family=FONT, color="#333333")
+            return
+        if n.kind in ("anchor", "initial", "final"):
+            return
+        if n.kind == "actor":
+            ax.text(n.cx, n.y + n.h + 4, n.label, ha="center", va="top", fontsize=fs, fontweight=weight,
+                    family=FONT, color="#1A1A1A", linespacing=1.2)
             return
         if n.kind == "entity":
             title, *fields = n.label.split("\n")
@@ -261,6 +280,23 @@ class Diagram:
         elif n.kind == "group":
             ax.add_patch(FancyBboxPatch((n.x, n.y), n.w, n.h, boxstyle="round,pad=0,rounding_size=8",
                                         fc=fill, ec=stroke, lw=0.9))
+        elif n.kind == "usecase":
+            ax.add_patch(Ellipse((n.cx, n.cy), n.w, n.h, fc=fill, ec=stroke, lw=lw))
+        elif n.kind == "actor":   # stick figure filling the node box
+            hr = min(n.w, n.h) * 0.16
+            ax.add_patch(Ellipse((n.cx, n.y + hr), 2 * hr, 2 * hr, fc="white", ec=stroke, lw=1.2))
+            neck, hip = n.y + 2 * hr, n.y + n.h * 0.62
+            ax.plot([n.cx, n.cx], [neck, hip], color=stroke, lw=1.2)
+            ax.plot([n.x + n.w * 0.15, n.x + n.w * 0.85], [neck + hr * 0.9, neck + hr * 0.9], color=stroke, lw=1.2)
+            ax.plot([n.cx, n.x + n.w * 0.2], [hip, n.y + n.h], color=stroke, lw=1.2)
+            ax.plot([n.cx, n.x + n.w * 0.8], [hip, n.y + n.h], color=stroke, lw=1.2)
+        elif n.kind == "initial":
+            ax.add_patch(Ellipse((n.cx, n.cy), n.w, n.h, fc=fill, ec=stroke, lw=1.0))
+        elif n.kind == "final":
+            ax.add_patch(Ellipse((n.cx, n.cy), n.w, n.h, fc="white", ec=stroke, lw=1.2))
+            ax.add_patch(Ellipse((n.cx, n.cy), n.w * 0.6, n.h * 0.6, fc=stroke, ec=stroke))
+        elif n.kind == "anchor":
+            return
         else:  # plain / entity
             ax.add_patch(Rectangle((n.x, n.y), n.w, n.h, fc=fill, ec=stroke, lw=lw))
 
@@ -273,9 +309,10 @@ class Diagram:
         (x0, y0), (x1, y1) = pts[-2], pts[-1]
         L = math.hypot(x1 - x0, y1 - y0) or 1
         back = min(9, L)
-        ax.annotate("", xy=(x1, y1), xytext=(x1 - (x1 - x0) / L * back, y1 - (y1 - y0) / L * back),
-                    arrowprops=dict(arrowstyle="-|>", color="#444444", lw=1.0, mutation_scale=9,
-                                    shrinkA=0, shrinkB=0), zorder=4)
+        if e.arrow:
+            ax.annotate("", xy=(x1, y1), xytext=(x1 - (x1 - x0) / L * back, y1 - (y1 - y0) / L * back),
+                        arrowprops=dict(arrowstyle="-|>", color="#444444", lw=1.0, mutation_scale=9,
+                                        shrinkA=0, shrinkB=0), zorder=4)
         if e.label:
             segs = [(pts[i], pts[i + 1]) for i in range(len(pts) - 1)]
             lens = [math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in segs]

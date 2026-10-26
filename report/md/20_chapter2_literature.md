@@ -146,7 +146,7 @@ Our classifiers are deliberately simple and well understood. Text features come 
 
 ## 2.7 Synthetic Data for Security
 
-Generative models have been used to create network traffic for a decade. Generative adversarial networks (GANs; Goodfellow et al., 2014) can produce realistic-looking flow records (Ring et al., 2019), and IDSGAN modified attack records so that they slipped past detectors (Lin, Shi and Xue, 2022). These methods need a lot of real data to learn from, which is exactly what is missing in the honeypot setting.
+Generative models have been used to create network traffic for a decade. Generative adversarial networks, or GANs (Goodfellow et al., 2014), can produce realistic-looking flow records (Ring et al., 2019), and IDSGAN modified attack records so that they slipped past detectors (Lin, Shi and Xue, 2022). These methods need a lot of real data to learn from, which is exactly what is missing in the honeypot setting.
 
 Robotics offers a different idea. Domain randomisation trains a model on many randomised simulations so that the real world looks like just another variation (Tobin et al., 2017). This only works if the simulations cover the real behaviour; a simulator that always produces the same kind of scene will not transfer. Our single-persona design is, in this sense, a simulator with no randomisation, and our results show the consequence.
 
@@ -288,22 +288,22 @@ Let $S$ be the set of synthetic sessions produced by LLM attackers against our h
 
 The **goal** of the project is to give defenders an evidence-based answer to the question "can LLM red-team agents generate realistic honeypot training data?".
 
-The **objectives** are:
+The **objectives** are written with the action verbs of Bloom's revised taxonomy (Bloom, 1956; Anderson and Krathwohl, 2001), so that each one states the level of thinking it demands, from *apply* up to *create*. The project will:
 
-1. **O1.** Build a reliable testbed in which several LLM attackers interact with Cowrie under two backends, with complete per-turn logging and automatic recovery from honeypot freezes.
-2. **O2.** Parse and normalise the CyberLab real data correctly, and reduce both corpora to comparable behaviour templates.
-3. **O3.** Quantify the synthetic-versus-real gap with label-free measures (JSD with bootstrap CIs, Jaccard overlap, coverage, C2ST AUC, tactic profiles).
-4. **O4.** Produce blind, independent intent labels with a written rubric, measure their agreement and resolve disagreements transparently.
-5. **O5.** Run a four-quadrant transfer experiment with template-grouped folds, de-duplicated tests, majority baselines and sensitivity checks.
-6. **O6.** Document everything (code, data provenance, design decisions, limitations) and disseminate the results as a research paper, this report and open documentation.
+1. **O1 (Create).** *Design and build* a reliable testbed in which several LLM attackers interact with Cowrie under two backends, with complete per-turn logging and automatic recovery from honeypot freezes.
+2. **O2 (Apply).** *Implement* a correct parser for the CyberLab real data and *apply* one normalisation to both corpora, reducing them to comparable behaviour templates.
+3. **O3 (Analyse).** *Compare* the synthetic and real corpora without labels and *differentiate* them by structure, tactics and command verbs, using JSD with bootstrap confidence intervals, Jaccard overlap, coverage and a classifier two-sample test.
+4. **O4 (Evaluate).** *Judge* the reliability of blind, independent intent labels by measuring their agreement, *resolve* disagreements transparently and *verify* the most influential labels.
+5. **O5 (Evaluate).** *Assess* whether a classifier trained on synthetic sessions transfers to real sessions, and *critique* the result with template-grouped folds, de-duplicated tests, majority baselines and sensitivity checks.
+6. **O6 (Create).** *Produce* and *publish* complete documentation of the code, data provenance, design decisions and limitations, as a research paper, this report and open project documentation.
 
-Table: Mapping between objectives, research questions and chapters. {#tab:objectives widths=2,6,3,4}
+Table: Objectives with their Bloom level, research questions and where they are reported. {#tab:objectives widths=2,5,2,3,4}
 
-| Objective | Summary | Research question | Reported in |
-|---|---|---|---|
-| O1 | Testbed and harness | RQ1, RQ4 | Sections 3.7, 4.1, 4.4 |
-| O2 | Parsing and normalisation | RQ2 | Sections 3.7, 4.3 |
-| O3 | Label-free comparison | RQ2, RQ4 | Section 4.6 |
-| O4 | Blind dual-LLM labels | RQ3 | Section 4.7 |
-| O5 | Transfer experiment | RQ3 | Sections 4.8, 4.9 |
-| O6 | Documentation and dissemination | All | Section 4.12, Appendices |
+| Objective | Summary | Bloom level | Research question | Reported in |
+|---|---|---|---|---|
+| O1 | Design and build the testbed and harness | Create | RQ1, RQ4 | Sections 3.7, 4.1, 4.4 |
+| O2 | Implement parsing and normalisation | Apply | RQ2 | Sections 3.7, 4.3 |
+| O3 | Compare the corpora without labels | Analyse | RQ2, RQ4 | Section 4.6 |
+| O4 | Judge and verify blind dual-LLM labels | Evaluate | RQ3 | Section 4.7 |
+| O5 | Assess transfer between corpora | Evaluate | RQ3 | Sections 4.8, 4.9 |
+| O6 | Produce and publish documentation | Create | All | Sections 3.8, 4.14, Appendices |

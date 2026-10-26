@@ -134,10 +134,10 @@ Table: Where to find each output. {#tab:outputs widths=6,10}
 |---|---|
 | The raw synthetic sessions | `logs/<attacker>[_vs_qwen.qwen3-32b]/*.json` |
 | The normalised corpora | `normalized/all_synthetic_120.jsonl`, `normalized/real_organic.jsonl` |
-| Attacker behaviour (Tables 4.4–4.6) | `results/tables_1_2.md` / `.json` |
-| Label-free comparison (Tables 4.9–4.14) | `results/domain_shift.md` / `.json` |
+| Attacker behaviour ([@tab:attackers], [@tab:status-counts]) | `results/tables_1_2.md` / `.json` |
+| Label-free comparison ([@tab:structure] to [@tab:cell-jsd]) | `results/domain_shift.md` / `.json` |
 | Annotation agreement | `results/annotation_agreement.md`; `annotation/labels_final.csv` |
-| Transfer results (Table 4.17) | `results/table3_transfer.md` / `.json` |
+| Transfer results ([@tab:transfer]) | `results/table3_transfer.md` / `.json` |
 | Sensitivity run | `results/sensitivity_dota/` |
 | Keyword-rule plumbing check | `results/rule_labels/` |
 | Figures | `figures/` (paper), `report/images/` (report) |
@@ -207,7 +207,7 @@ Table: Fields of a raw synthetic session log. {#tab:schema-raw widths=5,3,8}
 | attacker_type | string | Always `synthetic_llm` |
 | provider, model | string | How the attacker was reached |
 | honeypot_backend_label | string | `static` or `dynamic_qwen.qwen3-32b` |
-| status | string | One of the eight outcomes in Table 3.11 |
+| status | string | One of the eight outcomes in [@tab:statuses] |
 | total_turns | integer | Number of turns recorded |
 | recovery_attempts | integer | Infrastructure retries before this attempt succeeded |
 | turns | array | One object per turn (below) |

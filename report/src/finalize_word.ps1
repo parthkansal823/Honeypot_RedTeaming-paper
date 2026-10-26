@@ -65,18 +65,26 @@ try {
     $lists = @()
     foreach ($toc in $doc.TablesOfContents) { $lists += $toc.Range }
     foreach ($tof in $doc.TablesOfFigures) { $lists += $tof.Range }
-    foreach ($rg in $lists) {
+    foreach ($rg in $lists) { try {
         $after = $doc.Range($rg.End, $rg.End).Paragraphs.Item(1)
-        if ($after.Range.Text.Trim([char]13, [char]21, ' ').Length -eq 0) {
+        if ($after.Range.Text.Trim([char]13, [char]21, ' ').Length -gt 0) { $after = $after.Next(1) }
+        if ($null -ne $after -and $after.Range.Text.Trim([char]13, [char]21, ' ').Length -eq 0) {
             $after.LineSpacingRule = 4
             $after.LineSpacing = 1
             $after.SpaceBefore = 0
             $after.SpaceAfter = 0
             $after.Range.Font.Size = 1
-            # hidden mark: takes no space, so a full list page never spills an empty line
-            if ($after.Next(1) -ne $null -and $after.Next(1).Format.PageBreakBefore) { $after.Range.Font.Hidden = $true }
+            # If this 1 pt line still spilled onto a page of its own (the list filled its last
+            # page exactly), let the next heading start on that page instead of yet another one.
+            $doc.Repaginate()
+            $nextPara = $after.Next(1)
+            $prevPara = $after.Previous(1)
+            if ($null -ne $nextPara -and $null -ne $prevPara -and $nextPara.Format.PageBreakBefore -and
+                $after.Range.Information(3) -gt $prevPara.Range.Information(3)) {
+                $nextPara.Format.PageBreakBefore = $false
+            }
         }
-    }
+    } catch { Write-Host "  list-end fix skipped: $($_.Exception.Message)" } }
     $doc.Repaginate()
     foreach ($toc in $doc.TablesOfContents) { $toc.UpdatePageNumbers() }
     foreach ($tof in $doc.TablesOfFigures) { $tof.UpdatePageNumbers() }
@@ -92,6 +100,10 @@ try {
         Write-Host "exported $pdfPath"
     }
     $doc.Close($false)
+}
+catch {
+    Write-Host "FAILED at line $($_.InvocationInfo.ScriptLineNumber): $($_.Exception.Message)"
+    throw
 }
 finally {
     $word.Quit()

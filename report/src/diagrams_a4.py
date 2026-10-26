@@ -16,6 +16,166 @@ from diagram_lib import Diagram  # noqa: E402
 from session_features import normalize_cmd, segments, session_tactics, verb  # noqa: E402
 
 
+def d03_session_flow():
+    d = Diagram("d03_attacker_session_flowchart", 596, 822, "Attacker session loop")
+    d.node("start", 205, 8, 170, 30, "Start session", "terminal")
+    d.node("probe", 205, 50, 170, 56, "SSH banner\nanswers?", "decision")
+    d.node("rec", 8, 50, 165, 46, "Restart or wait\nfor watchdog")
+    d.node("recok", 16, 110, 150, 56, "Back in\n90 s?", "decision")
+    d.node("cf", 8, 182, 165, 34, "connection_failed", "io")
+    d.node("conn", 195, 118, 190, 38, "Open SSH shell,\nread banner")
+    d.node("lim", 205, 168, 170, 56, "Turn or time\nlimit hit?", "decision")
+    d.node("ask", 195, 236, 190, 38, "Ask the attacker LLM\nfor one command")
+    d.node("err", 205, 286, 170, 56, "LLM failed\n3 times?", "decision")
+    d.node("done", 205, 354, 170, 56, "Reply is\nDONE?", "decision")
+    d.node("ref", 205, 422, 170, 56, "Looks like\na refusal?", "decision")
+    d.node("send", 195, 490, 190, 38, "Send command, read\nuntil 1.5 s quiet")
+    d.node("lost", 205, 540, 170, 56, "Socket\nclosed?", "decision")
+    d.node("log", 195, 608, 190, 38, "Record turn; output\nis the next context")
+    d.node("stall", 205, 658, 170, 56, "2 empty replies\nin a row?", "decision")
+    statuses = [("s1", "lim", "max_turns / timed_out"), ("s2", "err", "llm_error"), ("s3", "done", "completed"),
+                ("s4", "ref", "attacker_refused"), ("s5", "lost", "connection_lost"),
+                ("s6", "stall", "honeypot_unresponsive")]
+    for sid, dec, lab in statuses:
+        d.node(sid, 400, d.nodes[dec].cy - 16, 180, 32, lab, "io", font=10.5)
+    d.node("save", 400, 736, 180, 34, "Save session JSON")
+    d.node("end", 410, 784, 160, 30, "End", "terminal")
+    d.edge("start", "probe")
+    d.edge("probe", "conn", "yes")
+    d.edge("probe", "rec", "no", exit="l", entry="r", entry_f=0.45)
+    d.edge("rec", "recok")
+    d.edge("recok", "conn", "yes", exit="r", entry="l")
+    d.edge("recok", "cf", "no")
+    d.edge("cf", "save", exit="b", entry="l", points=[(90, 753)])
+    for a, b, lab in (("conn", "lim", ""), ("lim", "ask", "no"), ("ask", "err", ""), ("err", "done", "no"),
+                      ("done", "ref", "no"), ("ref", "send", "no"), ("send", "lost", ""), ("lost", "log", "no"),
+                      ("log", "stall", "")):
+        d.edge(a, b, lab)
+    d.edge("stall", "lim", "no", exit="l", entry="l", points=[(182, 686), (182, 196)], label_pos=0.03)
+    for sid, dec, _ in statuses:
+        d.edge(dec, sid, "yes", exit="r", entry="l")
+        d.edge(sid, "save", exit="r", entry="r", points=[(590, d.nodes[sid].cy), (590, 753)])
+    d.edge("save", "end")
+    return d
+
+
+def d04_recovery():
+    d = Diagram("d04_recovery_flowchart", 590, 550, "Session retry and recovery")
+    d.node("st", 195, 8, 200, 32, "Next session", "terminal")
+    d.node("probe", 175, 54, 240, 44, "Probe SSH banner\n(raw socket, 5 s)")
+    d.node("ok", 210, 112, 170, 58, "Banner\nreceived?", "decision")
+    d.node("fix", 410, 104, 172, 74, "Restart over admin\nSSH (--vm-host), else\nwait for watchdog")
+    d.node("back", 426, 196, 140, 58, "Back in\n90 s?", "decision")
+    d.node("give", 410, 276, 172, 44, "Give up:\nconnection_failed", "io")
+    d.node("run", 175, 198, 240, 44, "run_session():\nthe turn loop")
+    d.node("infra", 200, 258, 190, 64, "Infrastructure\nfailure?", "decision")
+    d.node("why", 8, 196, 160, 52, "infrastructure = failed,\nunresponsive, lost", "note", font=10)
+    d.node("keep", 8, 266, 160, 52, "Keep log as data\n(completed, refused)", "io", font=10.5)
+    d.node("left", 210, 344, 170, 58, "Retries left?\n(max 3)", "decision")
+    d.node("retry", 420, 350, 160, 48, "Save attempt,\nwait 3 s, retry")
+    d.node("ex", 185, 426, 210, 44, "Save last log\n(retries used up)", "io")
+    d.node("end", 195, 500, 200, 32, "Session finished", "terminal")
+    d.edge("st", "probe")
+    d.edge("probe", "ok")
+    d.edge("ok", "run", "yes")
+    d.edge("ok", "fix", "no", exit="r", entry="l")
+    d.edge("fix", "back")
+    d.edge("back", "run", "yes", exit="l", entry="r")
+    d.edge("back", "give", "no")
+    d.edge("run", "infra")
+    d.edge("infra", "keep", "no", exit="l", entry="r")
+    d.edge("infra", "left", "yes")
+    d.edge("left", "retry", "yes", exit="r", entry="l")
+    d.edge("retry", "probe", exit="r", entry="r", points=[(586, 374), (586, 76)])
+    d.edge("left", "ex", "no")
+    d.edge("ex", "end")
+    d.edge("keep", "end", exit="b", entry="l", exit_f=0.19, points=[(38, 516)])
+    d.edge("give", "end", exit="l", entry="r", points=[(402, 298), (402, 516)])
+    return d
+
+
+def d05_parser():
+    d = Diagram("d05_cyberlab_parser_flowchart", 590, 700, "CyberLab parser")
+    d.node("in", 145, 8, 300, 50, "cowrie_2019-11-15.json\n(one JSON array, about 600 MB)", "data")
+    d.node("rd", 145, 76, 300, 40, "Read ONE line; strip '[' ',' ']'")
+    d.node("js", 210, 130, 170, 58, "Valid JSON?", "decision")
+    d.node("skip", 420, 140, 140, 38, "Skip the line", "io")
+    d.node("blk", 145, 204, 300, 40, "For each {session_id: [events]}")
+    d.node("mrg", 145, 258, 300, 44, "Get or create the session record\n(one session can repeat)")
+    d.node("srt", 145, 316, 300, 36, "Sort its events by timestamp")
+    d.node("map", 35, 368, 520, 150,
+           "Map every event into the record\n"
+           "session.connect → protocol (ssh or telnet)\n"
+           "login.success / login.failed → login_attempts[ ]\n"
+           "command.input → commands[ ] (drop the 'CMD: ' prefix)\n"
+           "file_download / file_upload → downloads[ ]\n"
+           "client.version → client_version;  session.closed → duration_s", "plain", font=11)
+    d.node("more", 210, 534, 170, 56, "More lines?", "decision")
+    d.node("out", 95, 616, 400, 56, "Write one JSON line per session\n→ real_organic.jsonl (76,785 sessions)", "data")
+    d.edge("in", "rd")
+    d.edge("rd", "js")
+    d.edge("js", "skip", "no", exit="r", entry="l")
+    d.edge("skip", "more", exit="r", entry="r", points=[(578, 159), (578, 562)])
+    d.edge("js", "blk", "yes")
+    d.edge("blk", "mrg")
+    d.edge("mrg", "srt")
+    d.edge("srt", "map")
+    d.edge("map", "more")
+    d.edge("more", "rd", "yes", exit="l", entry="l", points=[(16, 562), (16, 96)])
+    d.edge("more", "out", "no")
+    return d
+
+
+def d15_tiebreak():
+    d = Diagram("d15_label_tiebreak", 590, 780, "Rubric tie-break")
+    questions = [("Miner, dota kit or\nmining pool seen?", "resource_hijacking"),
+                 ("Payload downloaded\nor run?", "malware_drop"),
+                 ("Cron entry, SSH key, new\nuser or password change?", "persistence"),
+                 ("sudo / su / SUID used\nto gain rights?", "privilege_escalation"),
+                 ("Secrets, keys or\npassword hunting?", "credential_access"),
+                 ("Logs or history cleared,\ndefences disabled?", "defense_evasion"),
+                 ("Only looking around\n(uname, ls, ps, cpuinfo)?", "recon")]
+    d.node("st", 160, 10, 250, 40, "Read the WHOLE session", "terminal", bold=True)
+    prev = "st"
+    for i, (q, lab) in enumerate(questions):
+        y = 70 + i * 92
+        d.node(f"q{i}", 145, y, 280, 76, q, "decision", font=10.5)
+        d.node(f"l{i}", 445, y + 20, 140, 36, lab, "io", bold=True, font=10)
+        d.edge(prev, f"q{i}", "no" if i else "")
+        d.edge(f"q{i}", f"l{i}", "yes", exit="r", entry="l")
+        prev = f"q{i}"
+    d.node("oth", 215, 728, 140, 36, "other", "io", bold=True)
+    d.edge(prev, "oth", "no")
+    return d
+
+
+def d19_drain():
+    d = Diagram("d19_drain_algorithm", 590, 560, "Idle-timeout read")
+    d.node("st", 195, 10, 200, 34, "send_command(cmd)", "terminal")
+    d.node("s", 170, 60, 250, 44, "Write cmd + newline;\nstart the clock")
+    d.node("rr", 210, 122, 170, 58, "Bytes\nwaiting?", "decision")
+    d.node("rd", 412, 127, 170, 48, "Read up to 64 KB;\nmark the time")
+    d.node("idle", 200, 205, 190, 64, "Quiet 1.5 s\nsince data?", "decision")
+    d.node("cap", 200, 295, 190, 64, "Waited the\nmaximum?", "decision")
+    d.node("sl", 10, 305, 150, 44, "Sleep 0.15 s")
+    d.node("cl", 170, 385, 250, 44, "Strip ANSI codes,\nfix line endings")
+    d.node("out", 170, 450, 250, 40, "Return output and latency", "io")
+    d.node("end", 195, 510, 200, 34, "Next turn", "terminal")
+    d.edge("st", "s")
+    d.edge("s", "rr")
+    d.edge("rr", "rd", "yes", exit="r", entry="l")
+    d.edge("rd", "idle", exit="b", entry="t", entry_f=0.75, points=[(497, 190), (342, 190)])
+    d.edge("rr", "idle", "no")
+    d.edge("idle", "cl", "yes", exit="r", entry="r", points=[(560, 237), (560, 407)], label_pos=0.12)
+    d.edge("idle", "cap", "no")
+    d.edge("cap", "cl", "yes")
+    d.edge("cap", "sl", "no", exit="l", entry="r")
+    d.edge("sl", "rr", exit="t", entry="l", points=[(85, 151)])
+    d.edge("cl", "out")
+    d.edge("out", "end")
+    return d
+
+
 def d01_architecture():
     d = Diagram("d01_system_architecture", 590, 800, "System architecture")
     d.group("g1", 5, 5, 580, 265, "1  Synthetic data generation (own testbed)")

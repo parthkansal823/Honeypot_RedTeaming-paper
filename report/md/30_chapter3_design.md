@@ -209,11 +209,9 @@ Table: Main harness parameters (defaults in the code; batch files can override t
 
 ### 3.7.4 The attacker session loop
 
-Each session follows the flowchart in [@fig:session-a] and [@fig:session-b] and the steps in [@alg:session]. The loop is simple on purpose: the model sees the transcript so far, returns one command, the harness sends it and records what comes back. Six different exits are possible, and each one is saved as the session *status* ([@tab:statuses]).
+Each session follows the flowchart in [@fig:session] and the steps in [@alg:session]. The loop is simple on purpose: the model sees the transcript so far, returns one command, the harness sends it and records what comes back. Six different exits are possible, and each one is saved as the session *status* ([@tab:statuses]).
 
-![Attacker session loop, part 1: health check, connection and the first decisions of each turn.](images/d03_part1.png){#fig:session-a}
-
-![Attacker session loop, part 2: sending the command, logging the turn and detecting a frozen honeypot.](images/d03_part2.png){#fig:session-b}
+![Attacker session loop: health check, connection, the decisions taken in every turn, and the status saved at each exit.](images/d03_attacker_session_flowchart.png){#fig:session}
 
 ```algorithm {#alg:session} Attacker session loop (run_session)
 Input: configuration C (target, model, limits), system prompt P
@@ -564,3 +562,138 @@ Table: Risks identified during design and how they were handled. {#tab:risks wid
 | Chat tokens leak into commands | Medium | Medium | Detection and stripping of `<\|…` text before analysis |
 | API cost overrun | Low | Medium | Small cells (20 sessions), turn and time limits |
 | Attacker escapes the testbed | Low | Very high | One fixed target; no scanning code; isolated honeypot with no real data |
+
+## 3.8 Software Design and Engineering
+
+The research questions are answered by software, so the quality of the software decides the quality of the answers. This section describes the system the way a software engineer would: how it was developed, who uses it and for what, how data moves through it, how it is split into components and modules, how the parts talk to each other, how a session moves between states, how expensive each algorithm is, and how errors, configuration and security are handled.
+
+### 3.8.1 Development life cycle
+
+We followed an iterative and incremental life cycle ([@fig:sdlc]). Each iteration planned a small change, built it, ran a batch or an analysis, looked at the output and then refined the design. This suited a research project in which the right design was not known at the start: several decisions in this report, such as reading replies with an idle timeout or grouping folds by template, came directly from a failed earlier iteration.
+
+![Iterative development life cycle, with the main design changes made in this project.](images/d28_sdlc.png){#fig:sdlc}
+
+### 3.8.2 Use cases
+
+[@fig:usecase] shows who uses the system and for what. The researcher drives almost every step; the LLM annotators take part only in labelling; and readers or reviewers use the published results to check or reproduce the work.
+
+![Use case diagram of the research pipeline.](images/d21_use_case.png){#fig:usecase}
+
+Table: Use case summary. {#tab:usecases widths=2,5,3,6}
+
+| ID | Use case | Actor | Result |
+|---|---|---|---|
+| UC1 | Configure the honeypot | Researcher | Static or LLM backend selected in one configuration file |
+| UC2 | Run a synthetic batch | Researcher | 20 session logs per cell, with outcomes |
+| UC3 | Parse and normalise real data | Researcher | `real_organic.jsonl` and behaviour templates |
+| UC4 | Run the label-free comparison | Researcher | `results/domain_shift.md` and `.json` |
+| UC5 | Build blind annotation sheets | Researcher | Shuffled items and a hidden key |
+| UC6 | Label and adjudicate items | LLM annotators | Two independent label sets and adjudicated disagreements |
+| UC7 | Compute agreement and final labels | Researcher | κ and `labels_final.csv` |
+| UC8 | Run the transfer experiment | Researcher | `results/table3_transfer.md` and `.json` |
+| UC9 | Generate tables, figures and the report | Researcher | Paper tables, figures and this document |
+| UC10 | Read and reproduce results | Reader / reviewer | Independent check of every reported number |
+
+### 3.8.3 Data-flow diagrams
+
+The context diagram ([@fig:dfd0]) treats the whole pipeline as one process and shows what crosses its boundary. The level-1 diagram ([@fig:dfd1]) opens that process into eight sub-processes and four data stores. Every arrow carries a named file or message, which is why the stores in the diagram match the folders of the repository.
+
+![Data-flow diagram, level 0 (context diagram).](images/d22_dfd_level0.png){#fig:dfd0}
+
+![Data-flow diagram, level 1.](images/d23_dfd_level1.png){#fig:dfd1}
+
+Table: Data dictionary of the main stores and flows. {#tab:datadict widths=4,4,4,4}
+
+| Store or flow | Format | Written by | Read by |
+|---|---|---|---|
+| D1 `logs/` | One JSON file per session | Process 1.0 | Process 3.0 |
+| D2 `normalized/` | JSON Lines, one session per line | Processes 2.0 and 3.0 | Processes 4.0 and 5.0 |
+| D3 `annotation/` | CSV sheets, key and final labels | Process 6.0 | Process 7.0 |
+| D4 `results/` | Markdown and JSON | Processes 5.0 and 7.0 | Process 8.0 |
+| Raw CyberLab file | One JSON array (about 600 MB) | External (Zenodo) | Process 2.0 |
+| Report and paper | Word, PDF, LaTeX | Process 8.0 | Readers |
+
+### 3.8.4 Components and technology stack
+
+[@fig:components] groups the software into a testbed layer, an analysis layer, third-party libraries and outputs. One shared library, `session_features`, is imported by every analysis component, so the corpora are always normalised the same way. [@tab:stack] lists the technologies and why each was chosen.
+
+![Component diagram.](images/d24_component.png){#fig:components}
+
+Table: Technology stack. {#tab:stack widths=3,4,3,6}
+
+| Layer | Technology | Version | Why it was chosen |
+|---|---|---|---|
+| Language | Python | 3.11 | Mature data and ML ecosystem; one language for every step |
+| Honeypot | Cowrie in Docker | latest image | Standard SSH honeypot with structured logs and an LLM backend |
+| Containers | Docker, Docker Compose | Compose file 3.8 | Same environment on every machine (Merkel, 2014) |
+| SSH client | Paramiko | ≥ 3.4 | Pure-Python SSH with interactive channels |
+| Model access | AWS Bedrock (OpenAI-compatible API), requests, boto3 | ≥ 2.31 / ≥ 1.34 | One request format for several model vendors |
+| Machine learning | scikit-learn | ≥ 1.4 | TF-IDF, logistic regression, random forest, grouped CV, kappa (Pedregosa et al., 2011) |
+| Numerics | NumPy, SciPy, pandas | ≥ 1.26 / ≥ 1.12 / ≥ 2.2 | Arrays, Jensen-Shannon distance, tables (Harris et al., 2020; Virtanen et al., 2020) |
+| Charts and diagrams | Matplotlib; draw.io XML | 3.x | Reproducible figures; editable diagrams (Hunter, 2007) |
+| Documents | LaTeX (Springer LNCS class); python-docx and Microsoft Word | – | Paper and this report built from source |
+| Version control | Git and GitHub | – | History, collaboration, public release |
+
+### 3.8.5 Class and module design
+
+[@fig:classes] shows the main classes and modules. The analysis code is written as small, pure functions grouped by module: each function takes sessions or labels and returns numbers, which makes it easy to test and to reuse. [@tab:interfaces] lists the most important analysis functions.
+
+![Class and module diagram.](images/d25_class_diagram.png){#fig:classes}
+
+Table: Main analysis interfaces. {#tab:interfaces widths=5,5,6}
+
+| Function (module) | Input | Output |
+|---|---|---|
+| `normalize_cmd` (session_features) | One command string | Lower-cased command with values masked |
+| `segments` (session_features) | One command string | List of chained or piped sub-commands |
+| `verb` (session_features) | One segment | Its first word, without path |
+| `session_tactics` (session_features) | One session | Set of descriptive tactic names |
+| `template_key` (session_features) | One session | Tuple of normalised commands |
+| `corpus_stats` (domain_shift) | List of sessions | Templates, top-5 share, lengths, chaining |
+| `jsd_with_ci` (domain_shift) | Two session lists, random generator | JSD and its 95% bootstrap interval |
+| `c2st_auc` (domain_shift) | Two session lists, text function | Mean and standard deviation of AUC |
+| `fit_predict` (train_eval_classifier) | Training sessions, test sessions, labels | Predicted labels |
+| `row` (train_eval_classifier) | True, predicted and baseline labels | Macro-F1, accuracy and baselines |
+| `kappa` (agreement) | Two label maps, item ids | Cohen's κ |
+
+### 3.8.6 Interaction and state views
+
+[@fig:sequence] shows, as a sequence diagram, the messages exchanged during one synthetic session between the command line, the harness, the model API, the honeypot and the log file. [@fig:states] shows the same session as a state machine: every path ends in exactly one of the outcome states listed in [@tab:statuses], which is what makes the outcome counts in Chapter 4 complete.
+
+![Sequence diagram of one session.](images/d26_sequence.png){#fig:sequence}
+
+![State machine of a session and its possible outcomes.](images/d27_state_machine.png){#fig:states}
+
+### 3.8.7 Algorithmic complexity
+
+[@tab:complexity] gives the cost of the main analysis steps. $N$ is the number of sessions, $L$ the length of a command, $E$ the number of events in the raw file, $V$ the verb vocabulary size, $B$ the number of bootstrap samples, $T$ the number of trees and $d$ the number of features.
+
+Table: Time and memory cost of the main analysis steps. {#tab:complexity widths=5,4,3,4}
+
+| Step | Time | Memory | Note |
+|---|---|---|---|
+| Streaming parse of the raw file | O(E + Σ eₛ log eₛ) | O(N) records | Events sorted per session; file never loaded whole |
+| Normalising one command | O(L) | O(L) | A fixed list of regular expressions |
+| Grouping sessions into templates | O(N · L) | O(N) | Hash map keyed by the template tuple |
+| One JSD evaluation | O(V) | O(V) | Verb counts cached per session |
+| Bootstrap confidence interval | O(B · (N + V)) | O(V) | B = 500 |
+| Classifier two-sample test | 25 × (TF-IDF + logistic regression) | Sparse matrix | 5 × 5 cross-validation |
+| Random forest training | ≈ O(T · n log n · √d) | O(T · nodes) | T = 300 |
+| Cohen's κ | O(N + k²) | O(k²) | k = 8 labels |
+
+### 3.8.8 Engineering practices
+
+Table: Engineering practices used in the project. {#tab:practices widths=4,12}
+
+| Practice | How it was applied |
+|---|---|
+| Coding style | PEP 8 naming, short functions, docstrings that explain *why* a step exists |
+| Configuration | Run settings in a data class or JSON batch file; honeypot settings in one `cowrie.cfg` |
+| Secrets | API keys only in environment variables; never written to logs or the repository |
+| Reproducibility | Fixed seed 42 in every random step; results written to files by scripts |
+| Data safety | The raw dataset is never loaded whole; hashed identifiers only |
+| Error handling | Infrastructure failures recorded as a session status and in a separate event log; batches continue |
+| Version control | Git history for code, results and documents; generated files rebuilt rather than edited |
+| Documentation | Markdown sources for the report and documentation; editable draw.io sources for diagrams |
+
+

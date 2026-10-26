@@ -858,9 +858,12 @@ class Builder:
             self._cites.setdefault((first, year), []).append(
                 {"n": n, "disc": surnames[1] if len(surnames) > 1 else None,
                  "initial": f"{first} {initial.group(1)}" if initial else None, "many": many})
-        names = sorted({k[0] for k in self._cites}, key=len, reverse=True)
-        self._cite_re = re.compile(r"\b(?P<s>" + "|".join(re.escape(x) for x in names) + r")\b"
-                                   r"(?P<mid>[^();\d]{0,60}?)\(?(?P<y>\d{4}[a-z]?|n\.d\.)")
+        names = "|".join(re.escape(x) for x in sorted({k[0] for k in self._cites}, key=len, reverse=True))
+        year = r"(?P<y>\d{4}[a-z]?|n\.d\.)"
+        # one item inside a parenthetical citation: "Arp et al., 2022"
+        self._cite_re = re.compile(r"(?P<s>" + names + r")\b(?P<mid>[^();\d]{0,60}?),?\s*" + year)
+        # a narrative citation: "Arp et al. (2022)" -> "Arp et al. [3]"
+        self._cite_narr = re.compile(r"\b(?P<s>" + names + r")\b(?P<mid>[^();\d]{0,60}?)\(" + year + r"\)")
 
     def _cite_target(self, m):
         cands = self._cites.get((m.group("s"), m.group("y")))
@@ -878,38 +881,59 @@ class Builder:
                 return c["n"]
         return min(cands, key=lambda c: c["many"])["n"]
 
+    def _group_numbers(self, inner):
+        """Reference numbers for the inside of "(Arp et al., 2022; Spitzner, 2003a)", or None
+        if any item is not a citation (so ordinary brackets are left alone)."""
+        nums, last = [], None
+        for item in inner.split(";"):
+            item = item.strip()
+            m = self._cite_re.fullmatch(item)
+            if m:
+                n, last = self._cite_target(m), m.group("s")
+            elif last and (last, item) in self._cites:   # "(Government of India, 2000; 2023)"
+                n = self._cites[(last, item)][0]["n"]
+            else:
+                return None
+            if n is None:
+                return None
+            nums.append(n)
+        return nums
+
     def _cited(self, p, text, size=None, bold=False):
-        """Plain text in which every recognised citation links to its reference entry."""
+        """Plain text with numbered citations: "(Arp et al., 2022)" becomes "[3]" and
+        "Arp et al. (2022)" becomes "Arp et al. [3]"; every number links to its reference."""
         if not self._cite_re or self._in_references:
             self._run(p, text, size=size, bold=bold)
             return
-        pos = 0
-
-        def link(a, b, n):
-            r = self._run(p, text[a:b], size=size, bold=bold)
-            h = OxmlElement("w:hyperlink")
-            h.set(qn("w:anchor"), f"_Cite_{n}")
-            h.set(qn("w:history"), "1")
-            r._r.addprevious(h)
-            h.append(r._r)
-
-        for m in self._cite_re.finditer(text):
-            if m.start() < pos:
+        spans = []  # (start, end, [numbers], text kept before the bracket)
+        for m in re.finditer(r"\(([^()]*?(?:\d{4}[a-z]?|n\.d\.)[^()]*?)\)", text):
+            nums = self._group_numbers(m.group(1))
+            if nums:
+                spans.append((m.start(), m.end(), nums))
+        for m in self._cite_narr.finditer(text):
+            year_start = m.start("y") - 1
+            if any(a <= year_start < b for a, b, _ in spans):
                 continue
             n = self._cite_target(m)
-            if n is None:
+            if n is not None:
+                spans.append((year_start, m.end(), [n]))
+        pos = 0
+        for a, b, nums in sorted(spans):
+            if a < pos:
                 continue
-            if m.start() > pos:
-                self._run(p, text[pos:m.start()], size=size, bold=bold)
-            link(m.start(), m.end(), n)
-            pos = m.end()
-            # "(Government of India, 2000; 2023)": a bare second year of the same author
-            more = re.match(r"(\s*;\s*)(\d{4}[a-z]?)", text[pos:])
-            if more and (m.group("s"), more.group(2)) in self._cites:
-                self._run(p, more.group(1), size=size, bold=bold)
-                n2 = self._cites[(m.group("s"), more.group(2))][0]["n"]
-                link(pos + len(more.group(1)), pos + more.end(), n2)
-                pos += more.end()
+            self._run(p, text[pos:a], size=size, bold=bold)
+            self._run(p, "[", size=size, bold=bold)
+            for k, n in enumerate(sorted(set(nums))):
+                if k:
+                    self._run(p, ", ", size=size, bold=bold)
+                r = self._run(p, str(n), size=size, bold=bold)
+                h = OxmlElement("w:hyperlink")
+                h.set(qn("w:anchor"), f"_Cite_{n}")
+                h.set(qn("w:history"), "1")
+                r._r.addprevious(h)
+                h.append(r._r)
+            self._run(p, "]", size=size, bold=bold)
+            pos = b
         if pos < len(text):
             self._run(p, text[pos:], size=size, bold=bold)
 
@@ -1027,21 +1051,7 @@ def read_meta(path):
     return meta
 
 
-def prep_images():
-    """Split the tall session flowchart into two halves so both stay legible on A4."""
-    src = REPORT / "images" / "d03_attacker_session_flowchart.png"
-    if not src.exists():
-        return
-    with Image.open(src) as im:
-        dpi = im.info.get("dpi", (220, 220))
-        scale = im.size[0] / 780.0          # diagram canvas is 780 px wide
-        cut = int(905 * scale)
-        im.crop((0, 0, im.size[0], cut)).save(REPORT / "images" / "d03_part1.png", dpi=dpi)
-        im.crop((0, cut, im.size[0], im.size[1])).save(REPORT / "images" / "d03_part2.png", dpi=dpi)
-
-
 def build_report():
-    prep_images()
     md = REPORT / "md"
     meta = read_meta(md / "00_meta.md")
     b = Builder(meta, meta.get("short_title", meta["title"]))
