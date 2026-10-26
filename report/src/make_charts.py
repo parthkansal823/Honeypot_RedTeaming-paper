@@ -1,14 +1,12 @@
 """
 Data charts and console "screenshots" for the project report.
 
-Every number comes from results/*.json, report/data/report_stats.json or
-report/data/literature_corpus.csv. Colours follow the paper figures
+Every number comes from results/*.json or report/data/report_stats.json. Colours follow the paper figures
 (Okabe-Ito, colour-blind safe) with hatching as a second cue for print.
 
 Run from the repository root (after compute_stats.py):
     python report/src/make_charts.py
 """
-import csv
 import json
 import textwrap
 from collections import Counter
@@ -370,57 +368,8 @@ def c14_label_sources():
     save(fig, "c14_label_sources")
 
 
-# ------------------------------------------------------------ literature
-def lit():
-    with open(ROOT / "report" / "data" / "literature_corpus.csv", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
 
 
-def c15_biblio():
-    rows = lit()
-    years = [int(r["year"]) for r in rows]
-    bins = [(1900, 1999, "before 2000"), (2000, 2009, "2000–2009"), (2010, 2014, "2010–2014"), (2015, 2019, "2015–2019"),
-            (2020, 2022, "2020–2022"), (2023, 2023, "2023"), (2024, 2024, "2024"), (2025, 2026, "2025–2026")]
-    counts = [sum(lo <= y <= hi for y in years) for lo, hi, _ in bins]
-    fig, (a, b) = plt.subplots(1, 2, figsize=(6.0, 3.0), gridspec_kw={"width_ratios": [1.25, 1]})
-    bars = a.bar([n for *_, n in bins], counts, color=BLUE, edgecolor=EDGE, lw=0.5, width=0.7)
-    bar_labels(a, bars)
-    a.set_ylabel("Works reviewed")
-    a.set_title(f"By publication period (n = {len(rows)})")
-    plt.setp(a.get_xticklabels(), rotation=45, ha="right", fontsize=8)
-    a.set_ylim(0, max(counts) * 1.2)
-    grid(a, "y")
-    t = Counter(r["type"] for r in rows).most_common()[::-1]
-    bars = b.barh([k for k, _ in t], [v for _, v in t], color=ORANGE, hatch="", edgecolor=EDGE, lw=0.5, height=0.6)
-    bar_labels(b, bars, horizontal=True)
-    b.set_xlim(0, max(v for _, v in t) * 1.25)
-    b.set_title("By publication type")
-    b.set_xlabel("Works")
-    grid(b)
-    fig.tight_layout()
-    save(fig, "c15_biblio_period_type")
-
-
-def c16_biblio_theme():
-    rows = lit()
-    t = Counter(r["theme"] for r in rows).most_common()[::-1]
-    recent = Counter(r["theme"] for r in rows if int(r["year"]) >= 2020)
-    fig, ax = plt.subplots(figsize=(6.0, 3.3))
-    y = np.arange(len(t))
-    old = [v - recent[k] for k, v in t]
-    new = [recent[k] for k, _ in t]
-    ax.barh(y, old, color=GREY, hatch="", edgecolor=EDGE, lw=0.5, height=0.62, label="Published before 2020")
-    ax.barh(y, new, left=old, color=BLUE, edgecolor=EDGE, lw=0.5, height=0.62, label="Published 2020 or later")
-    for yy, (k, v) in zip(y, t):
-        ax.text(v + 0.3, yy, str(v), va="center", fontsize=7.5)
-    ax.set_yticks(y)
-    ax.set_yticklabels([k for k, _ in t])
-    ax.set_xlabel("Works reviewed")
-    ax.set_xlim(0, max(v for _, v in t) * 1.15)
-    ax.legend(frameon=False, loc="lower right")
-    grid(ax)
-    fig.tight_layout()
-    save(fig, "c16_biblio_theme")
 
 
 # --------------------------------------------------------------- schedule
@@ -623,6 +572,6 @@ def copy_paper_figures():
 if __name__ == "__main__":
     for fn in (c01_real_funnel, c02_template_sizes, c03_countries, c04_credentials, c05_status, c06_latency, c07_commands,
                c08_first_commands, c09_top_verbs, c10_structure, c11_confusion, c12_labels, c13_q3_predictions,
-               c14_label_sources, c15_biblio, c16_biblio_theme, c17_gantt, c18_transfer, c19_attacker_categories,
+               c14_label_sources, c17_gantt, c18_transfer, c19_attacker_categories,
                c20_tactics, c21_condition_jsd, consoles):
         fn()

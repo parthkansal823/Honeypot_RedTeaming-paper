@@ -9,7 +9,7 @@ The UG project report (Chandigarh University format) for *Do LLM Red-Team Agents
 | Report text (source) | `md/*.md` |
 | Figures used in the report | `images/*.png` |
 | Editable flowcharts and UML diagrams | `diagrams/*.drawio` (open in draw.io / diagrams.net) |
-| Numbers computed for the report | `data/report_stats.json`, `data/literature_corpus.csv` |
+| Numbers computed for the report | `data/report_stats.json` |
 | Build scripts | `src/` |
 
 ## Editing

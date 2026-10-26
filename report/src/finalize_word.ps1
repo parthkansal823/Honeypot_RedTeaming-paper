@@ -89,10 +89,12 @@ try {
     foreach ($toc in $doc.TablesOfContents) { $toc.UpdatePageNumbers() }
     foreach ($tof in $doc.TablesOfFigures) { $tof.UpdatePageNumbers() }
 
-    $doc.Save()
+    # Save to a temporary file first and swap it in afterwards, so a brief lock on the
+    # original (preview pane, sync client, antivirus) cannot make the whole run fail.
+    $tmp = [System.IO.Path]::ChangeExtension($path, ".finalized.docx")
+    $doc.SaveAs2($tmp, 16)
     $pages = $doc.ComputeStatistics(2)
     $words = $doc.ComputeStatistics(0)
-    Write-Host "saved $path  pages=$pages  words=$words"
 
     if ($Pdf) {
         $pdfPath = [System.IO.Path]::ChangeExtension($path, ".pdf")
@@ -100,6 +102,12 @@ try {
         Write-Host "exported $pdfPath"
     }
     $doc.Close($false)
+    for ($i = 0; $i -lt 10; $i++) {
+        try { Move-Item -Force $tmp $path -ErrorAction Stop; break }
+        catch { Start-Sleep -Seconds 3 }
+    }
+    if (Test-Path $tmp) { Write-Host "could not replace $path (is it open?); finalized copy kept at $tmp" }
+    else { Write-Host "saved $path  pages=$pages  words=$words" }
 }
 catch {
     Write-Host "FAILED at line $($_.InvocationInfo.ScriptLineNumber): $($_.Exception.Message)"

@@ -101,7 +101,7 @@ Table: The largest real behaviour templates (normalised commands; first steps on
 
 | Rank | Sessions | Commands | What the template does (first steps) |
 |---|---|---|---|
-| 1 | 1,038 | 23 | Counts CPU cores, resets the root password with `chpasswd`, writes and removes a hidden marker file in `/var/tmp`, checks memory and CPU model, then decodes and runs a base64 shell script that unpacks a "dota" kit, starts an SSH scanner and runs the kit's setup (Outlaw-style cryptominer dropper; Trend Micro, 2018) |
+| 1 | 1,038 | 23 | Counts CPU cores, resets the root password with `chpasswd`, writes and removes a hidden marker file in `/var/tmp`, checks memory and CPU model, then decodes and runs a base64 shell script that unpacks a "dota" kit, starts an SSH scanner and runs the kit's setup; an Outlaw-style cryptominer dropper (Trend Micro, 2018) |
 | 2 | 429 | 19 | Same CPU fingerprinting, changes the password with `passwd`, writes and removes the marker file; no payload to unpack |
 | 3 | 63 | 6 | Mirai-style shell escape (`shell`, `sh`, `enable`, `system`), random `busybox` tag probe, reads the busybox binary |
 | 4 | 43 | 10 | Shell escape, reads `/proc/mounts`, probes writable directories such as `/dev/shm` with the busybox tag |
@@ -481,7 +481,7 @@ Table: Test cases with expected and observed results. {#tab:testcases widths=2,6
 | TC-09 | Agreement and final labels | κ computed on all items; every session labelled | κ = 0.898 on 184 items; 1,672 + 120 labelled | Pass |
 | TC-10 | Honeypot freeze is noticed | Event written to the infrastructure log | Recovery attempts logged on 27 September 2026 | Pass |
 | TC-11 | Report numbers match results | No number without a source file | Checked while writing | Pass |
-| TC-12 | Report build | All references cited and linked; no broken fields | 122 of 122 references linked; no field errors | Pass |
+| TC-12 | Report build | All references cited and linked; no broken fields | 124 of 124 references linked; no field errors | Pass |
 
 ## 4.14 Report Preparation, Project Management and Communication
 
